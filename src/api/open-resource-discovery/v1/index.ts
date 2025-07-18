@@ -6,6 +6,10 @@ import { ordDocumentApiV1Config } from './config.js'
 import { ordConfiguration } from './data/configuration.js'
 import { getOrdDocumentForTenant, ordDocument } from './data/document.js'
 
+type CustomRequest = FastifyRequest<{
+  Querystring: { 'local-tenant-id': string }
+}>
+
 export async function ordDocumentV1Api(fastify: FastifyInstance): Promise<void> {
   fastify.log.info(`Registering ${ordDocumentApiV1Config.apiName}...`)
 
@@ -31,8 +35,8 @@ export async function ordDocumentV1Api(fastify: FastifyInstance): Promise<void> 
   // The result of this request will differ, depending on the tenant chosen
   // We'll implement this as an ORD access strategy, where the tenant ID is passed via Header
   // To show multiple options, we can offer both local tenant ID and global tenant ID for correlations
-  fastify.get(`/${ordDocumentApiV1Config.apiEntryPoint}/documents/system-instance`, (req: FastifyRequest) => {
-    const tenantIds = getTenantIdsFromHeader(req)
+  fastify.get(`/${ordDocumentApiV1Config.apiEntryPoint}/documents/system-instance`, (req: CustomRequest) => {
+    const tenantIds = getTenantIdsFromHeader(req.headers, req.query['local-tenant-id'])
 
     if (tenantIds.localTenantId) {
       // This is the `sap.foo.bar:open-local-tenant-id:v1` access strategy

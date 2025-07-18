@@ -1,4 +1,4 @@
-import { FastifyRequest } from 'fastify'
+import { FastifyRequest, FastifyQueryParameters } from 'fastify'
 import _ from 'lodash'
 import { TenantConfiguration, tenants } from '../../data/user/tenants.js'
 import { apiUsersAndPasswords } from '../../data/user/users.js'
@@ -40,16 +40,22 @@ export async function validateUserAuthorization(
   }
 }
 
-export function getTenantIdsFromHeader(req: FastifyRequest): {
+export function getTenantIdsFromHeader(
+  headers: FastifyRequest['headers'],
+  queryTenantId?: string,
+): {
   localTenantId: string | undefined
   sapGlobalTenantId: string | undefined
 } {
-  const localTenantId = _.isArray(req.headers['sap-local-tenant-id'])
-    ? req.headers['sap-local-tenant-id'].join()
-    : req.headers['sap-local-tenant-id']
-  const sapGlobalTenantId = _.isArray(req.headers['sap-global-tenant-id'])
-    ? req.headers['sap-global-tenant-id'].join()
-    : req.headers['sap-global-tenant-id']
+  const localTenantId =
+    queryTenantId === 'T1'
+      ? queryTenantId
+      : _.isArray(headers['sap-local-tenant-id'])
+        ? headers['sap-local-tenant-id'].join()
+        : headers['sap-local-tenant-id']
+  const sapGlobalTenantId = _.isArray(headers['sap-global-tenant-id'])
+    ? headers['sap-global-tenant-id'].join()
+    : headers['sap-global-tenant-id']
 
   return {
     localTenantId,
