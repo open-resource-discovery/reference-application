@@ -22,9 +22,9 @@ async function getOpenApiDefinitionHandler(req: CustomRequest): Promise<OpenAPIV
   if (tenantIds.localTenantId) {
     // This is the `sap.foo.bar:open-local-tenant-id:v1` access strategy
     return getCrmV1ApiDefinition(tenantIds.localTenantId)
-  } else if (tenantIds.sapGlobalTenantId) {
+  } else if (tenantIds.globalTenantId) {
     // This is the `sap.foo.bar:open-global-tenant-id:v1` access strategy
-    return getCrmV1ApiDefinition(globalTenantIdToLocalTenantIdMapping[tenantIds.sapGlobalTenantId])
+    return getCrmV1ApiDefinition(globalTenantIdToLocalTenantIdMapping[tenantIds.globalTenantId])
   } else {
     // Return the OpenAPI definition without tenant specific modifications
     // This is the `open` access strategy

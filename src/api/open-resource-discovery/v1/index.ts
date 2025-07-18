@@ -38,9 +38,9 @@ export async function ordDocumentV1Api(fastify: FastifyInstance): Promise<void> 
     if (tenantIds.localTenantId) {
       // This is the `sap.foo.bar:open-local-tenant-id:v1` access strategy
       return getOrdDocumentForTenant(tenantIds.localTenantId)
-    } else if (tenantIds.sapGlobalTenantId) {
+    } else if (tenantIds.globalTenantId) {
       // This is the `sap.foo.bar:open-global-tenant-id:v1` access strategy
-      return getOrdDocumentForTenant(globalTenantIdToLocalTenantIdMapping[tenantIds.sapGlobalTenantId])
+      return getOrdDocumentForTenant(globalTenantIdToLocalTenantIdMapping[tenantIds.globalTenantId])
     } else {
       throw new Error(
         'No tenant ID provided in the request header via local-tenant-id or global-tenant-id. Hint: for demo purposes it can be set in the query string as well, e.g. ?local-tenant-id=T1',

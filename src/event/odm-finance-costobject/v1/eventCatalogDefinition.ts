@@ -22,9 +22,9 @@ async function getSapEventCatalogDefinitionHandler(req: CustomRequest): Promise<
   if (tenantIds.localTenantId) {
     // This is the `sap.foo.bar:open-local-tenant-id:v1` access strategy
     return getOdmCostObjectSapEventCatalogDefinition(tenantIds.localTenantId)
-  } else if (tenantIds.sapGlobalTenantId) {
+  } else if (tenantIds.globalTenantId) {
     // This is the `sap.foo.bar:open-global-tenant-id:v1` access strategy
-    return getOdmCostObjectSapEventCatalogDefinition(globalTenantIdToLocalTenantIdMapping[tenantIds.sapGlobalTenantId])
+    return getOdmCostObjectSapEventCatalogDefinition(globalTenantIdToLocalTenantIdMapping[tenantIds.globalTenantId])
   } else {
     // Return the definition without tenant specific modifications
     // This is the `open` access strategy
