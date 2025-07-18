@@ -41,26 +41,39 @@ export function validateUserAuthorization(username: string, password: string, re
 
 export function getTenantIdsFromHeader(req: CustomRequest): {
   localTenantId: string | undefined
-  sapGlobalTenantId: string | undefined
+  globalTenantId: string | undefined
 } {
-  let localTenantId = _.isArray(req.headers['sap-local-tenant-id'])
-    ? req.headers['sap-local-tenant-id'].join()
-    : req.headers['sap-local-tenant-id']
+  let localTenantId
+  let globalTenantId
 
-  if (req.query['local-tenant-id'] && localTenants.includes(req.query['local-tenant-id'])) {
+  // GET parameter has priority over header
+  if (req.query['local-tenant-id']) {
     localTenantId = req.query['local-tenant-id']
+  } else {
+    localTenantId = _.isArray(req.headers['local-tenant-id'])
+      ? req.headers['local-tenant-id'].join()
+      : req.headers['local-tenant-id']
   }
 
-  const sapGlobalTenantId = _.isArray(req.headers['sap-global-tenant-id'])
-    ? req.headers['sap-global-tenant-id'].join()
-    : req.headers['sap-global-tenant-id']
+  if (req.query['global-tenant-id']) {
+    globalTenantId = req.query['global-tenant-id']
+  } else {
+    globalTenantId = _.isArray(req.headers['global-tenant-id'])
+      ? req.headers['global-tenant-id'].join()
+      : req.headers['global-tenant-id']
+  }
 
-  if (req.query['global-tenant-id'] && req.query['global-tenant-id'] in globalTenantIdToLocalTenantIdMapping) {
-    localTenantId = req.query['global-tenant-id']
+  // Validation
+  if (localTenantId && !localTenants.includes(localTenantId)) {
+    throw new UnauthorizedError(`Unknown local tenant ID '${localTenantId}'`)
+  }
+
+  if (globalTenantId && !globalTenantIdToLocalTenantIdMapping[globalTenantId]) {
+    throw new UnauthorizedError(`Unknown global tenant ID '${globalTenantId}'`)
   }
 
   return {
     localTenantId,
-    sapGlobalTenantId,
+    globalTenantId,
   }
 }
