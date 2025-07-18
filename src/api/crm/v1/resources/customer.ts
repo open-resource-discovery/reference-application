@@ -86,7 +86,7 @@ interface GetCustomersByIdParams {
   id: number
 }
 
-async function getCustomerByIdHandler(req: FastifyRequest<{ Params: GetCustomersByIdParams }>): Promise<Customer> {
+function getCustomerByIdHandler(req: FastifyRequest<{ Params: GetCustomersByIdParams }>): Customer {
   if (!req.user || !req.user.tenantId) {
     throw new NotFoundError('No user / tenant ID provided', req.params.id.toString())
   }

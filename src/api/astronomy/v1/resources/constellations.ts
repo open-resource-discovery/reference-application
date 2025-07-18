@@ -10,7 +10,7 @@ export const openApiPaths: OpenAPIV3.PathsObject = {}
 /**
  * Constellations related HTTP operations
  */
-export async function constellationsResource(fastify: FastifyInstance): Promise<void> {
+export function constellationsResource(fastify: FastifyInstance): void {
   fastify.get('/', {}, getConstellationsHandler)
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
   fastify.get('/:id', { schema: getConstellationsByIdSchema }, getConstellationByIdHandler)
@@ -20,7 +20,7 @@ export async function constellationsResource(fastify: FastifyInstance): Promise<
 // GET /constellations                  //
 //////////////////////////////////////////
 
-async function getConstellationsHandler(): Promise<ConstellationsResponse> {
+function getConstellationsHandler(): ConstellationsResponse {
   return { value: mapConstellationData(constellationData) }
 }
 
@@ -75,9 +75,7 @@ interface GetConstellationsByIdParams {
   id: string
 }
 
-async function getConstellationByIdHandler(
-  req: FastifyRequest<{ Params: GetConstellationsByIdParams }>,
-): Promise<Constellation> {
+function getConstellationByIdHandler(req: FastifyRequest<{ Params: GetConstellationsByIdParams }>): Constellation {
   const constellations = mapConstellationData(constellationData)
   const found = constellations.find((el) => el.id === req.params.id)
   if (found) {
