@@ -1,8 +1,10 @@
-import { FastifyRequest, FastifyQueryParameters } from 'fastify'
+import { FastifyRequest } from 'fastify'
 import _ from 'lodash'
 import { TenantConfiguration, tenants } from '../../data/user/tenants.js'
 import { apiUsersAndPasswords } from '../../data/user/users.js'
 import { UnauthorizedError } from '../../error/UnauthorizedError.js'
+import { globalTenantIdToLocalTenantIdMapping } from '../../data/user/tenantMapping.js'
+import { CustomRequest } from '../../types/types.js'
 
 export interface UserInfo {
   userName: string
@@ -12,6 +14,8 @@ export interface UserInfo {
 
 export const basicAuthConfig = { validate: validateUserAuthorization, authenticate: true }
 
+const localTenants = Object.values(globalTenantIdToLocalTenantIdMapping)
+
 /**
  * Validates a request for a valid BasicAuth login
  *
@@ -20,11 +24,7 @@ export const basicAuthConfig = { validate: validateUserAuthorization, authentica
  *
  * @throws UnauthorizedError
  */
-export async function validateUserAuthorization(
-  username: string,
-  password: string,
-  req: FastifyRequest,
-): Promise<void> {
+export function validateUserAuthorization(username: string, password: string, req: FastifyRequest): void {
   if (apiUsersAndPasswords[username] && apiUsersAndPasswords[username].password === password) {
     const tenantId = apiUsersAndPasswords[username].tenantId
     // Add user info to the request that we've validated
@@ -34,28 +34,30 @@ export async function validateUserAuthorization(
       tenantConfiguration: tenants[tenantId],
     }
     req.log.info(`User "${username}" of tenant "${tenantId}" authenticated successfully.`)
-    return
   } else {
     throw new UnauthorizedError(`Unknown username "${username}" and password combination`)
   }
 }
 
-export function getTenantIdsFromHeader(
-  headers: FastifyRequest['headers'],
-  queryTenantId?: string,
-): {
+export function getTenantIdsFromHeader(req: CustomRequest): {
   localTenantId: string | undefined
   sapGlobalTenantId: string | undefined
 } {
-  const localTenantId =
-    queryTenantId === 'T1'
-      ? queryTenantId
-      : _.isArray(headers['sap-local-tenant-id'])
-        ? headers['sap-local-tenant-id'].join()
-        : headers['sap-local-tenant-id']
-  const sapGlobalTenantId = _.isArray(headers['sap-global-tenant-id'])
-    ? headers['sap-global-tenant-id'].join()
-    : headers['sap-global-tenant-id']
+  let localTenantId = _.isArray(req.headers['sap-local-tenant-id'])
+    ? req.headers['sap-local-tenant-id'].join()
+    : req.headers['sap-local-tenant-id']
+
+  if (req.query['local-tenant-id'] && localTenants.includes(req.query['local-tenant-id'])) {
+    localTenantId = req.query['local-tenant-id']
+  }
+
+  const sapGlobalTenantId = _.isArray(req.headers['sap-global-tenant-id'])
+    ? req.headers['sap-global-tenant-id'].join()
+    : req.headers['sap-global-tenant-id']
+
+  if (req.query['global-tenant-id'] && req.query['global-tenant-id'] in globalTenantIdToLocalTenantIdMapping) {
+    localTenantId = req.query['global-tenant-id']
+  }
 
   return {
     localTenantId,
