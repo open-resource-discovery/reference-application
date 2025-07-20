@@ -1,4 +1,4 @@
-import { FastifyRequest } from 'fastify'
+import { FastifyRequest, FastifyReply } from 'fastify'
 import _ from 'lodash'
 import { TenantConfiguration, tenants } from '../../data/user/tenants.js'
 import { apiUsersAndPasswords } from '../../data/user/users.js'
@@ -24,18 +24,29 @@ const localTenants = Object.values(globalTenantIdToLocalTenantIdMapping)
  *
  * @throws UnauthorizedError
  */
-export function validateUserAuthorization(username: string, password: string, req: FastifyRequest): void {
-  if (apiUsersAndPasswords[username] && apiUsersAndPasswords[username].password === password) {
-    const tenantId = apiUsersAndPasswords[username].tenantId
-    // Add user info to the request that we've validated
-    req.user = {
-      userName: username,
-      tenantId,
-      tenantConfiguration: tenants[tenantId],
+export async function validateUserAuthorization(
+  username: string,
+  password: string,
+  req: FastifyRequest,
+  _reply: FastifyReply,
+  done: (error?: Error) => void,
+): Promise<void> {
+  try {
+    if (apiUsersAndPasswords[username] && apiUsersAndPasswords[username].password === password) {
+      const tenantId = apiUsersAndPasswords[username].tenantId
+      // Add user info to the request that we've validated
+      req.user = {
+        userName: username,
+        tenantId,
+        tenantConfiguration: tenants[tenantId],
+      }
+      req.log.info(`User "${username}" of tenant "${tenantId}" authenticated successfully.`)
+      done()
+    } else {
+      done(new UnauthorizedError(`Unknown username "${username}" and password combination`))
     }
-    req.log.info(`User "${username}" of tenant "${tenantId}" authenticated successfully.`)
-  } else {
-    throw new UnauthorizedError(`Unknown username "${username}" and password combination`)
+  } catch (error) {
+    done(error instanceof Error ? error : new Error('Authentication failed'))
   }
 }
 
