@@ -15,5 +15,6 @@ export default {
   reporters: ['default'],
   modulePaths: [compilerOptions.baseUrl],
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { useESM: true }),
+  testMatch: ['<rootDir>/src/**/*.test.ts'],
   testTimeout: 30000,
 }

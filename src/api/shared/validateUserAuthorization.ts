@@ -24,13 +24,13 @@ const localTenants = Object.values(globalTenantIdToLocalTenantIdMapping)
  *
  * @throws UnauthorizedError
  */
-export async function validateUserAuthorization(
+export function validateUserAuthorization(
   username: string,
   password: string,
   req: FastifyRequest,
   _reply: FastifyReply,
   done: (error?: Error) => void,
-): Promise<void> {
+): void {
   try {
     if (apiUsersAndPasswords[username] && apiUsersAndPasswords[username].password === password) {
       const tenantId = apiUsersAndPasswords[username].tenantId
