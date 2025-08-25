@@ -132,13 +132,9 @@ const odmFinanceCostObjectV1EventResource: EventResource = {
   extensible: {
     supported: 'no',
   },
-  entityTypeMappings: [
+  exposedEntityTypes: [
     {
-      entityTypeTargets: [
-        {
-          ordId: 'sap.odm.finance:entityType:CostObject:v1',
-        },
-      ],
+      ordId: 'sap.odm.finance:entityType:CostObject:v1',
     },
   ],
 }
