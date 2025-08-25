@@ -60,13 +60,9 @@ const astronomyV1ApiResource: APIResource = {
   extensible: {
     supported: 'no',
   },
-  entityTypeMappings: [
+  exposedEntityTypes: [
     {
-      entityTypeTargets: [
-        {
-          ordId: `${appNamespace}:entityType:Constellation:v1`,
-        },
-      ],
+      ordId: `${appNamespace}:entityType:Constellation:v1`,
     },
   ],
 }
@@ -159,9 +155,9 @@ export const ordDocument: ORDDocument = {
   describedSystemInstance: describedSystemInstance,
   products: [product],
   packages: [ordReferenceAppApiPackage, ordReferenceAppEventsPackage],
-  consumptionBundles: [noAuthConsumptionBundle],
   apiResources: [astronomyV1ApiResource, crmV1ApiResource],
   eventResources: [odmFinanceCostObjectV1EventResource],
+  consumptionBundles: [noAuthConsumptionBundle],
   entityTypes: [constellationEntityType],
   tombstones: [
     {
