@@ -9,4 +9,7 @@ declare module 'fastify' {
       tenantConfiguration: TenantConfiguration
     }
   }
+  export interface FastifyQueryParameters {
+    [key: string]: string
+  }
 }

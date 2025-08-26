@@ -41,7 +41,7 @@ The metadata is openly accessible and is system instance aware.
 Depending on the **tenant** the metadata return can potentially vary (reflecting customizations).
 This strategy therefore only applies to multi-tenant systems.
 
-When fetching metadata for a specific tenant, the request REQUIRES to add an additional HTTP Header `global-tenant-id` with a [CLD Tenant ID](https://wiki.one.int.sap/wiki/display/CLMAM/CLD+Tenant+ID) as a value.
+When fetching metadata for a specific tenant, the request REQUIRES to add an additional HTTP Header `global-tenant-id` with a Tenant ID as a value (use value `740000101` for test purposes in this app).
 The application internally maps from the global tenant ID to a local tenant and returns the metadata for the local tenant as requested (see [./src/data/user/tenantMapping.ts](./src/data/user/tenantMapping.ts)).
 Therefore the application MUST support the mapping of the global tenant ID to its own tenant IDs.
 
@@ -54,7 +54,7 @@ In this case metadata would be returned without considering tenant specifics.
 The metadata is openly accessible, but system instance aware.
 Depending tenant the metadata that is return can vary (reflecting customizations).
 
-When fetching metadata for a specific tenant, the request REQUIRES an additional HTTP Header `local-tenant-id` with a local tenant ID (that the application locally understands) as a value.
+When fetching metadata for a specific tenant, the request REQUIRES an additional HTTP Header `local-tenant-id` with a local tenant ID (that the application locally understands) as a value (use value `T1` for test purpose in this app).
 
 If the specified header is missing the request will be identical to the `open` access strategy.
 Whether this is supported is defined by additionally supporting the `open` access strategy.

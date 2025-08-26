@@ -10,10 +10,10 @@ export const openApiResourceName = 'openapi'
  *
  * This will later be referenced through ORD.
  */
-export async function openApiResource(fastify: FastifyInstance): Promise<void> {
+export function openApiResource(fastify: FastifyInstance): void {
   fastify.get('/oas3.json', {}, getOpenApiDefinitionHandler)
 }
 
-async function getOpenApiDefinitionHandler(): Promise<OpenAPIV3.Document> {
+function getOpenApiDefinitionHandler(): OpenAPIV3.Document {
   return getAstronomyV1ApiDefinition()
 }

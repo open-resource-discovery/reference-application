@@ -163,7 +163,7 @@ describe('Server Integration Tests', () => {
       expect(body).toHaveProperty('openResourceDiscovery')
     })
 
-    it.skip('should return tenant-aware, system-instance ORD document', async () => {
+    it('should return tenant-aware, system-instance ORD document', async () => {
       const response = await app.inject({
         method: 'GET',
         url: '/open-resource-discovery/v1/documents/system-instance',
