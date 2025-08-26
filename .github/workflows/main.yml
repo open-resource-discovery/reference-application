@@ -11,9 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install NPM dependencies
@@ -30,3 +33,40 @@ jobs:
 
       - name: Test
         run: npm run test:ci
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-build
+          path: |
+            ./dist
+            ./package*.json
+
+  Deploy:
+    needs: [Build]
+    runs-on: ubuntu-latest
+    if: |
+      always() &&
+      !contains(needs.*.result, 'cancelled') &&
+      !contains(needs.*.result, 'failure')
+    # if: |
+    #   always() &&
+    #   !contains(needs.*.result, 'cancelled') &&
+    #   !contains(needs.*.result, 'failure') &&
+    #   github.ref == 'refs/heads/main'
+    container: cloudfoundry/cli:latest
+    steps:
+      - name: Download pre-built app artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-build
+
+      # - uses: actions/setup-node@v4
+      #   with:
+      #     node-version: 22
+      #     cache: npm
+
+      - name: Test CF
+        run: |
+          pwd
+          ls -la
+          cf --help
