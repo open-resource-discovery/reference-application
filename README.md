@@ -30,10 +30,20 @@ The tenants and their configuration be found in [./src/data/user/tenants.ts](./s
 Some resources in the ORD Reference App are system instance aware.
 When fetching the metadata, we need to select for which tenant we need the information.
 
-Therefore we defined custom [Access Strategies](https://open-resource-discovery.github.io/specification/spec-v1/interfaces/document#api-resource-definition_accessstrategies) how the ORD information and the related metadata can be accessed.
+The system-instance ORD document uses the standard `basic-auth` [Access Strategy](https://open-resource-discovery.github.io/specification/spec-extensions/access-strategies/basic-auth).
+The application infers the tenant from the authenticated user, so no separate tenant selector is needed.
+For example, user `foo` belongs to tenant `T1`, while user `bar` belongs to tenant `T2`.
+
+Other tenant-aware resource definitions demonstrate custom open access strategies that select a tenant through an HTTP header.
 
 To see some examples how the access strategies are used, have a look at [./docs/http/CRM_API.http](./docs/http/CRM_API.http) and [./docs/http/ORD_Document_API.http](./docs/http/ORD_Document_API.http).
 They contain documented example requests and are executable through the [REST Client VSCode Extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client).
+
+### `basic-auth`
+
+The system-instance ORD document is protected with Basic Auth.
+Its tenant context is derived from the authenticated user.
+For example, authenticate as `foo` with password `bar` to retrieve the document for tenant `T1`.
 
 ### `sap.foo.bar:open-global-tenant-id:v1`
 

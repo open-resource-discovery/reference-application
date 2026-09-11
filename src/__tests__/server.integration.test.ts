@@ -141,6 +141,10 @@ describe('Server Integration Tests', () => {
   })
 
   describe('ORD Document API Integration', () => {
+    const tenantT1Credentials = Buffer.from('foo:bar').toString('base64')
+    const tenantT2Credentials = Buffer.from('bar:foo').toString('base64')
+    const invalidCredentials = Buffer.from('invalid:credentials').toString('base64')
+
     it('should return ORD configuration', async () => {
       const response = await app.inject({
         method: 'GET',
@@ -148,11 +152,19 @@ describe('Server Integration Tests', () => {
       })
 
       expect(response.statusCode).toBe(200)
-      const body = JSON.parse(response.payload) as { value: { id: string; name: string }[] }
+      const body = JSON.parse(response.payload) as {
+        openResourceDiscoveryV1: { documents: { perspective?: string; accessStrategies: { type: string }[] }[] }
+      }
       expect(body).toHaveProperty('openResourceDiscoveryV1')
+      expect(body.openResourceDiscoveryV1.documents).toContainEqual(
+        expect.objectContaining({
+          perspective: 'system-instance',
+          accessStrategies: [{ type: 'basic-auth' }],
+        }),
+      )
     })
 
-    it('should return static system-instance perspective ORD document', async () => {
+    it('should return static system-version perspective ORD document without authentication', async () => {
       const response = await app.inject({
         method: 'GET',
         url: '/open-resource-discovery/v1/documents/system-version',
@@ -163,19 +175,58 @@ describe('Server Integration Tests', () => {
       expect(body).toHaveProperty('openResourceDiscovery')
     })
 
-    it('should return tenant-aware, system-instance ORD document', async () => {
+    it('should require authentication for the system-instance ORD document', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: '/open-resource-discovery/v1/documents/system-instance',
+      })
+
+      expect(response.statusCode).toBe(401)
+    })
+
+    it('should reject invalid credentials for the system-instance ORD document', async () => {
       const response = await app.inject({
         method: 'GET',
         url: '/open-resource-discovery/v1/documents/system-instance',
         headers: {
-          'local-tenant-id': 'T1',
+          Authorization: `Basic ${invalidCredentials}`,
+        },
+      })
+
+      expect(response.statusCode).toBe(401)
+    })
+
+    it.each([
+      ['T1', tenantT1Credentials],
+      ['T2', tenantT2Credentials],
+    ])('should infer tenant %s from Basic Auth', async (tenantId, credentials) => {
+      const response = await app.inject({
+        method: 'GET',
+        url: '/open-resource-discovery/v1/documents/system-instance',
+        headers: {
+          Authorization: `Basic ${credentials}`,
         },
       })
 
       expect(response.statusCode).toBe(200)
       const body = JSON.parse(response.payload) as { description: string }
       expect(body).toHaveProperty('openResourceDiscovery')
+      expect(body.description).toContain(tenantId)
+    })
+
+    it('should not let a query parameter override the authenticated tenant', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: '/open-resource-discovery/v1/documents/system-instance?local-tenant-id=T2',
+        headers: {
+          Authorization: `Basic ${tenantT1Credentials}`,
+        },
+      })
+
+      expect(response.statusCode).toBe(200)
+      const body = JSON.parse(response.payload) as { description: string }
       expect(body.description).toContain('T1')
+      expect(body.description).not.toContain('T2')
     })
   })
 

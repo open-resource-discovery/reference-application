@@ -114,6 +114,14 @@ export const openAccessStrategy: AccessStrategy = {
 }
 
 /**
+ * Resources using this strategy derive their tenant context from the
+ * authenticated user.
+ */
+export const basicAuthAccessStrategy: AccessStrategy = {
+  type: 'basic-auth',
+}
+
+/**
  * This is a custom access strategy that is specific to the ORD Reference application
  */
 export const customAccessStrategyGlobalTenantId: AccessStrategy = {
