@@ -1,5 +1,5 @@
 import { ORDConfiguration } from '@open-resource-discovery/specification'
-import { customAccessStrategyLocalTenantId, customAccessStrategyGlobalTenantId, openAccessStrategy } from './shared.js'
+import { basicAuthAccessStrategy, openAccessStrategy } from './shared.js'
 
 export const ordConfiguration: ORDConfiguration = {
   openResourceDiscoveryV1: {
@@ -10,10 +10,10 @@ export const ordConfiguration: ORDConfiguration = {
         accessStrategies: [openAccessStrategy],
         perspective: 'system-version',
       },
-      // Serve dynamic metadata, requires system / tenant headers and the correct access strategy
+      // Serve dynamic metadata for the tenant identified by Basic Auth
       {
         url: '/open-resource-discovery/v1/documents/system-instance',
-        accessStrategies: [customAccessStrategyGlobalTenantId, customAccessStrategyLocalTenantId],
+        accessStrategies: [basicAuthAccessStrategy],
         perspective: 'system-instance',
       },
     ],

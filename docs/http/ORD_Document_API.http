@@ -10,6 +10,7 @@
 # TenantIDs for Tenant T1
 @localTenantId = T1
 @sapGlobalTenantId = 740000101
+@apiAuthorization = Basic Zm9vOmJhcg==
 
 # TenantIDs for Tenant T2
 # @localTenantId = T2
@@ -30,37 +31,18 @@ content-type: application/json
 # Second Step (1/2)
 # * REPEAT for each discovered ORD Document:
 #   * GET the ORD document according to the `accessType` (here: `open`)
-GET {{apiBasePath}}/open-resource-discovery/v1/documents/1 HTTP/1.1
+GET {{apiBasePath}}/open-resource-discovery/v1/documents/system-version HTTP/1.1
 content-type: application/json
 
 #################################################################################
 
 # Second Step (2/2)
 # * REPEAT for each discovered ORD Document:
-#   * GET the ORD document according to the `accessType` (here: `custom`)
-#     * REPEAT this per tenant / system instance because `systemInstanceAware`: true
-
-# We have three choices:
-
-# 1) Provide no tenant ID, then we only get a system instance unaware ORD document back
-
-GET {{apiBasePath}}/open-resource-discovery/v1/documents/2 HTTP/1.1
+#   * GET the ORD document according to the `accessType` (here: `basic-auth`)
+#   * The authenticated user determines the tenant / system instance.
+GET {{apiBasePath}}/open-resource-discovery/v1/documents/system-instance HTTP/1.1
 content-type: application/json
-
-#################################################################################
-
-# 2) Provide global tenant ID that needs to be mapped by this application to its local tenant id
-GET {{apiBasePath}}/open-resource-discovery/v1/documents/2 HTTP/1.1
-content-type: application/json
-global-tenant-id: {{sapGlobalTenantId}}
-
-#################################################################################
-
-# 3) Provide local tenant ID and use it directly
-
-GET {{apiBasePath}}/open-resource-discovery/v1/documents/2 HTTP/1.1
-content-type: application/json
-local-tenant-id: {{localTenantId}}
+Authorization: {{apiAuthorization}}
 
 #################################################################################
 

@@ -1,11 +1,11 @@
 import { FastifyInstance } from 'fastify'
+import { fastifyBasicAuth } from '@fastify/basic-auth'
 import fastifyETag from '@fastify/etag'
-import { globalTenantIdToLocalTenantIdMapping } from '../../../data/user/tenantMapping.js'
-import { getTenantIdsFromHeader } from '../../shared/validateUserAuthorization.js'
+import { basicAuthConfig } from '../../shared/validateUserAuthorization.js'
+import { UnauthorizedError } from '../../../error/UnauthorizedError.js'
 import { ordDocumentApiV1Config } from './config.js'
 import { ordConfiguration } from './data/configuration.js'
 import { getOrdDocumentForTenant, ordDocument } from './data/document.js'
-import { CustomRequest } from '../../../types/types.js'
 
 export async function ordDocumentV1Api(fastify: FastifyInstance): Promise<void> {
   fastify.log.info(`Registering ${ordDocumentApiV1Config.apiName}...`)
@@ -13,6 +13,7 @@ export async function ordDocumentV1Api(fastify: FastifyInstance): Promise<void> 
   // Add support for ETag as RECOMMENDED by ORD and according to RFC2616-sec13
   // @see https://github.com/fastify/fastify-etag
   await fastify.register(fastifyETag)
+  await fastify.register(fastifyBasicAuth, basicAuthConfig)
 
   // SYSTEM INSTANCE UNAWARE ORD information
 
@@ -28,23 +29,17 @@ export async function ordDocumentV1Api(fastify: FastifyInstance): Promise<void> 
 
   // DYNAMIC (system instance perspective) ORD information
 
-  // Serve the unprotected, but system instance aware ORD Document #2
-  // The result of this request will differ, depending on the tenant chosen
-  // We'll implement this as an ORD access strategy, where the tenant ID is passed via Header
-  // To show multiple options, we can offer both local tenant ID and global tenant ID for correlations
-  fastify.get(`/${ordDocumentApiV1Config.apiEntryPoint}/documents/system-instance`, (req: CustomRequest) => {
-    const tenantIds = getTenantIdsFromHeader(req)
+  // Serve the protected, system instance aware ORD document.
+  // The authenticated user determines the tenant whose metadata is returned.
+  fastify.get(
+    `/${ordDocumentApiV1Config.apiEntryPoint}/documents/system-instance`,
+    { onRequest: fastify.basicAuth },
+    (req) => {
+      if (!req.user?.tenantId) {
+        throw new UnauthorizedError('The authenticated user has no tenant assigned')
+      }
 
-    if (tenantIds.localTenantId) {
-      // This is the `sap.foo.bar:open-local-tenant-id:v1` access strategy
-      return getOrdDocumentForTenant(tenantIds.localTenantId)
-    } else if (tenantIds.globalTenantId) {
-      // This is the `sap.foo.bar:open-global-tenant-id:v1` access strategy
-      return getOrdDocumentForTenant(globalTenantIdToLocalTenantIdMapping[tenantIds.globalTenantId])
-    } else {
-      throw new Error(
-        'No tenant ID provided in the request header via local-tenant-id or global-tenant-id. Hint: for demo purposes it can be set in the query string as well, e.g. ?local-tenant-id=T1',
-      )
-    }
-  })
+      return getOrdDocumentForTenant(req.user.tenantId)
+    },
+  )
 }
