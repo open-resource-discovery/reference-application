@@ -83,7 +83,7 @@ The tenants and their configuration be found in [src/data/user/tenants.ts](/src/
 
 ### Prerequisites
 
-Install [Node.js](https://nodejs.org/en/) v26 or newer.
+Install [Node.js](https://nodejs.org/en/) v24.
 
 ### Run the app
 
