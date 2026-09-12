@@ -1,5 +1,5 @@
 import { BackendError } from '../shared/error/BackendError.js'
-import { DetailError } from '../shared/model/ErrorResponses.js'
+import type { DetailError } from '../shared/model/ErrorResponses.js'
 
 export class NotFoundError extends BackendError {
   name = 'NotFoundError'

@@ -1,5 +1,5 @@
-import { DetailError } from '../shared/model/ErrorResponses.js'
 import { BackendError } from '../shared/error/BackendError.js'
+import type { DetailError } from '../shared/model/ErrorResponses.js'
 
 /**
  * Internal Server Error

@@ -1,4 +1,4 @@
-import { FastifyInstance } from 'fastify'
+import type { FastifyInstance } from 'fastify'
 import { crmV1ApiConfig } from './config.js'
 import { customersResource, customersResourceName } from './resources/customer.js'
 import { openApiResource, openApiResourceName } from './resources/openApi.js'

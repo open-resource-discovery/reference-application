@@ -1,16 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 /**
  * SAP Event (based on CloudEvents) TS Interface
  *
  * @see https://cloudevents.io/
  * @see https://github.com/cloudevents/spec/blob/v1.0.1/spec.md
  * */
-export interface CloudEvent {
+export interface CloudEvent<Data = unknown> {
   /**
    * The event payload.
    */
-  data?: CloudEventData
+  data?: Data
   /**
    * Base64 encoded event payload. Must adhere to RFC4648.
    */
@@ -54,8 +52,3 @@ export interface CloudEvent {
    */
   type: string
 }
-
-/**
- * The event payload.
- */
-export type CloudEventData = any[] | boolean | number | { [key: string]: any } | null | string

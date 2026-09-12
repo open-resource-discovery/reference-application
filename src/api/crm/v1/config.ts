@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { OpenAPIV3 } from 'openapi-types'
+import type { OpenAPIV3 } from 'openapi-types'
 import { LOCAL_URL, PUBLIC_URL } from '../../../config.js'
 import { tenants } from '../../../data/user/tenants.js'
 import {
@@ -10,9 +10,9 @@ import {
   errorOASResponse500,
   errorSchemas,
 } from '../../../shared/model/ErrorResponses.js'
+import type { SapOpenApiDocument } from '../../../shared/model/OpenAPI.js'
 import { customerSchema, customersResponseSchema } from './models/Customer.js'
 import { customersResourceName, openApiPaths } from './resources/customer.js'
-import { SapOpenApiDocument } from '../../../shared/model/OpenAPI.js'
 
 const apiName = 'CRM API'
 const apiNamespace = 'crm'
@@ -121,7 +121,7 @@ export function getCrmV1ApiDefinition(tenantId?: string): SapOpenApiDocument {
           properties: fieldExtensions,
         }
 
-        openApiDefinition.components!.schemas!.Customer = customerSchemaExtended
+        openApiDefinition.components.schemas.Customer = customerSchemaExtended
       }
     }
   }

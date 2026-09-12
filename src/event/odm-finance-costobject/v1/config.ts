@@ -1,5 +1,5 @@
 import { getEventSource } from '../../shared/eventConfig.js'
-import { SapEventCatalog } from '../../shared/SapEventCatalog.js'
+import type { SapEventCatalog } from '../../shared/SapEventCatalog.js'
 import { costCenterCreatedType } from './CostCenter.js'
 
 const eventResourceName = 'odm-finance-costobject'

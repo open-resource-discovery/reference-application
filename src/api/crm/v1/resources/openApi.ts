@@ -1,9 +1,9 @@
-import { FastifyInstance } from 'fastify'
-import { OpenAPIV3 } from 'openapi-types'
+import type { FastifyInstance } from 'fastify'
+import type { OpenAPIV3 } from 'openapi-types'
 import { globalTenantIdToLocalTenantIdMapping } from '../../../../data/user/tenantMapping.js'
+import type { CustomRequest } from '../../../../types/types.js'
 import { getTenantIdsFromHeader } from '../../../shared/validateUserAuthorization.js'
 import { getCrmV1ApiDefinition } from '../config.js'
-import { CustomRequest } from '../../../../types/types.js'
 
 export const openApiResourceName = 'openapi'
 

@@ -1,4 +1,4 @@
-export const PORT = parseInt(process.env.PORT || '8080')
+export const PORT = parseInt(process.env.PORT || '8080', 10)
 export const LOCAL_URL = `http://localhost:${PORT}`
 
 const DEFAULT_PUBLIC_URL = 'https://ord-reference-application.cfapps.sap.hana.ondemand.com'

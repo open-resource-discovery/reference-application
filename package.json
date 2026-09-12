@@ -5,20 +5,20 @@
   "type": "module",
   "private": true,
   "engines": {
-    "node": ">=20.0.0",
+    "node": ">=26.0.0",
     "npm": ">=9.0.0"
   },
   "scripts": {
     "build": "rimraf dist && tsc",
     "start": "node ./dist/src/server.js",
     "dev": "tsx watch ./src/server.ts",
-    "lint": "eslint . --fix",
-    "lint:ci": "eslint .",
-    "prettier": "prettier --write \"**/*.{json,yml,yaml,md}\"",
-    "prettier:ci": "prettier --check \"**/*.{json,yml,yaml,md}\"",
-    "format": "npm run prettier && npm run lint",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watchAll",
-    "test:ci": "node --experimental-vm-modules node_modules/jest/bin/jest.js --ci --collectCoverage"
+    "lint": "biome lint --write .",
+    "lint:ci": "biome lint .",
+    "format": "biome format --write .",
+    "format:ci": "biome format .",
+    "check": "biome check .",
+    "test": "npm run build && node --test dist/src/__tests__/*.test.js",
+    "test:ci": "npm run build && node --test --experimental-test-coverage dist/src/__tests__/*.test.js"
   },
   "repository": {
     "type": "git",
@@ -35,21 +35,15 @@
     "uuid": "^14.0.2"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.5.13",
     "@open-resource-discovery/specification": "^1.16.3",
-    "@sap/eslint-config": "^0.5.2",
-    "@tsconfig/node20": "20.1.10",
-    "@types/jest": "^30.0.0",
+    "@tsconfig/node26": "^26.0.1",
     "@types/json-schema": "^7.0.15",
     "@types/lodash": "^4.17.25",
-    "@types/node": "^24.13.4",
-    "eslint": "^10.10.0",
-    "jest": "^30.5.1",
-    "jest-util": "30.5.1",
+    "@types/node": "^26.5.1",
     "openapi-types": "^12.1.3",
-    "prettier": "3.9.6",
     "rimraf": "^6.1.3",
-    "ts-jest": "^29.4.12",
     "tsx": "4.23.13",
-    "typescript": "~5.9.3"
+    "typescript": "^7.0.2"
   }
 }

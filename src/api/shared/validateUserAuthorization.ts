@@ -1,10 +1,10 @@
-import { FastifyRequest, FastifyReply } from 'fastify'
+import type { FastifyReply, FastifyRequest } from 'fastify'
 import _ from 'lodash'
-import { TenantConfiguration, tenants } from '../../data/user/tenants.js'
+import { globalTenantIdToLocalTenantIdMapping } from '../../data/user/tenantMapping.js'
+import { type TenantConfiguration, tenants } from '../../data/user/tenants.js'
 import { apiUsersAndPasswords } from '../../data/user/users.js'
 import { UnauthorizedError } from '../../error/UnauthorizedError.js'
-import { globalTenantIdToLocalTenantIdMapping } from '../../data/user/tenantMapping.js'
-import { CustomRequest } from '../../types/types.js'
+import type { CustomRequest } from '../../types/types.js'
 
 export interface UserInfo {
   userName: string
@@ -54,8 +54,8 @@ export function getTenantIdsFromHeader(req: CustomRequest): {
   localTenantId: string | undefined
   globalTenantId: string | undefined
 } {
-  let localTenantId
-  let globalTenantId
+  let localTenantId: string | undefined
+  let globalTenantId: string | undefined
 
   // GET parameter has priority over header
   if (req.query['local-tenant-id']) {

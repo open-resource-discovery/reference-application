@@ -5,9 +5,9 @@ import {
   errorOASResponse500,
   errorSchemas,
 } from '../../../shared/model/ErrorResponses.js'
+import type { SapOpenApiDocument } from '../../../shared/model/OpenAPI.js'
 import { constellationSchema, constellationsResponseSchema } from './models/Constellation.js'
 import { openApiPaths } from './resources/constellations.js'
-import { SapOpenApiDocument } from '../../../shared/model/OpenAPI.js'
 
 const apiName = 'Astronomy API'
 const apiNamespace = 'astronomy'

@@ -1,5 +1,6 @@
-import { describe, expect, beforeEach, afterEach, it } from '@jest/globals'
-import { FastifyInstance, fastify } from 'fastify'
+import assert from 'node:assert/strict'
+import { afterEach, beforeEach, describe, it } from 'node:test'
+import { type FastifyInstance, fastify } from 'fastify'
 import { astronomyV1Api } from '../api/astronomy/v1/index.js'
 import { crmV1Api } from '../api/crm/v1/index.js'
 import { healthCheckV1Api } from '../api/health/v1/index.js'
@@ -44,8 +45,8 @@ describe('Server', () => {
         url: '/health/v1',
       })
 
-      expect(response.statusCode).toBe(200)
-      expect(response.payload).toBe('OK')
+      assert.equal(response.statusCode, 200)
+      assert.equal(response.payload, 'OK')
     })
 
     it('should return 200 OK for health check v2', async () => {
@@ -54,8 +55,8 @@ describe('Server', () => {
         url: '/health/v2',
       })
 
-      expect(response.statusCode).toBe(200)
-      expect(JSON.parse(response.payload)).toEqual({ status: 'OK' })
+      assert.equal(response.statusCode, 200)
+      assert.deepEqual(JSON.parse(response.payload), { status: 'OK' })
     })
   })
 
@@ -66,7 +67,7 @@ describe('Server', () => {
         url: '/astronomy/v1/constellations',
       })
 
-      expect(response.statusCode).toBe(200)
+      assert.equal(response.statusCode, 200)
     })
 
     it('should require authentication for CRM API routes', async () => {
@@ -75,7 +76,7 @@ describe('Server', () => {
         url: '/crm/v1/customers',
       })
 
-      expect(response.statusCode).toBe(401)
+      assert.equal(response.statusCode, 401)
     })
   })
 
@@ -86,7 +87,7 @@ describe('Server', () => {
         url: '/non-existent-route',
       })
 
-      expect(response.statusCode).toBe(404)
+      assert.equal(response.statusCode, 404)
     })
   })
 })

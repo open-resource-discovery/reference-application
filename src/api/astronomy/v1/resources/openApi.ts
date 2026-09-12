@@ -1,5 +1,5 @@
-import { FastifyInstance } from 'fastify'
-import { OpenAPIV3 } from 'openapi-types'
+import type { FastifyInstance } from 'fastify'
+import type { OpenAPIV3 } from 'openapi-types'
 import { getAstronomyV1ApiDefinition } from '../config.js'
 
 export const openApiResourceName = 'openapi'

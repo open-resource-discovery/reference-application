@@ -1,9 +1,9 @@
-import { FastifyInstance } from 'fastify'
+import type { FastifyInstance } from 'fastify'
 import { getTenantIdsFromHeader } from '../../../api/shared/validateUserAuthorization.js'
 import { globalTenantIdToLocalTenantIdMapping } from '../../../data/user/tenantMapping.js'
-import { SapEventCatalog } from '../../shared/SapEventCatalog.js'
+import type { CustomRequest } from '../../../types/types.js'
+import type { SapEventCatalog } from '../../shared/SapEventCatalog.js'
 import { getOdmCostObjectSapEventCatalogDefinition } from './config.js'
-import { CustomRequest } from '../../../types/types.js'
 
 export const openApiResourceName = 'openapi'
 

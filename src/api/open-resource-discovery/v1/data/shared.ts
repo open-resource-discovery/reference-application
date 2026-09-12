@@ -1,4 +1,6 @@
-import {
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
+import type {
   ConsumptionBundle,
   MetadataDefinitionAccessStrategy,
   OrdV1DocumentAccessStrategy,
@@ -7,9 +9,7 @@ import {
   SystemInstance,
   SystemVersion,
 } from '@open-resource-discovery/specification'
-import path from 'path'
 import { PUBLIC_URL } from '../../../../config.js'
-import { readFileSync } from 'fs'
 
 const packageJson = JSON.parse(readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf-8')) as {
   version: string

@@ -1,14 +1,14 @@
-import { fastify } from 'fastify'
+import * as path from 'node:path'
 import { fastifyStatic } from '@fastify/static'
-import * as path from 'path'
-import { astronomyV1Api } from './api/astronomy/v1/index.js'
+import { fastify } from 'fastify'
 import { astronomyV1ApiConfig } from './api/astronomy/v1/config.js'
-import { crmV1Api } from './api/crm/v1/index.js'
+import { astronomyV1Api } from './api/astronomy/v1/index.js'
 import { crmV1ApiConfig } from './api/crm/v1/config.js'
-import { healthCheckV1Api } from './api/health/v1/index.js'
+import { crmV1Api } from './api/crm/v1/index.js'
 import { healthCheckV1Config } from './api/health/v1/config.js'
-import { healthCheckV2Api } from './api/health/v2/index.js'
+import { healthCheckV1Api } from './api/health/v1/index.js'
 import { healthCheckV2Config } from './api/health/v2/config.js'
+import { healthCheckV2Api } from './api/health/v2/index.js'
 import { ordDocumentV1Api } from './api/open-resource-discovery/v1/index.js'
 import { PORT } from './config.js'
 import { errorHandler } from './error/errorHandler.js'
@@ -23,7 +23,6 @@ const server = fastify({
   exposeHeadRoutes: true,
 })
 
-// eslint-disable-next-line no-console
 initServer().catch(console.error)
 
 async function initServer(): Promise<void> {
@@ -55,7 +54,6 @@ async function initServer(): Promise<void> {
 }
 
 function closeGracefully(signal: string): void {
-  // eslint-disable-next-line no-console
   console.log(`Received signal to terminate: ${signal}`)
   process.exit()
 }
