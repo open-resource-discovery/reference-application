@@ -1,27 +1,28 @@
-import { fastify } from 'fastify'
+import * as path from 'node:path'
 import { fastifyStatic } from '@fastify/static'
-import * as path from 'path'
-import { astronomyV1Api } from './api/astronomy/v1/index.js'
-import { astronomyV1ApiConfig } from './api/astronomy/v1/config.js'
-import { crmV1Api } from './api/crm/v1/index.js'
-import { crmV1ApiConfig } from './api/crm/v1/config.js'
-import { healthCheckV1Api } from './api/health/v1/index.js'
-import { healthCheckV1Config } from './api/health/v1/config.js'
-import { healthCheckV2Api } from './api/health/v2/index.js'
-import { healthCheckV2Config } from './api/health/v2/config.js'
-import { ordDocumentV1Api } from './api/open-resource-discovery/v1/index.js'
-import { PORT } from './config.js'
-import { errorHandler } from './error/errorHandler.js'
-import { sapEventCatalogDefinition } from './event/odm-finance-costobject/v1/eventCatalogDefinition.js'
-import { logger } from './shared/logger.js'
+import { fastify } from 'fastify'
+import { astronomyV1ApiConfig } from './api/astronomy/v1/config.ts'
+import { astronomyV1Api } from './api/astronomy/v1/index.ts'
+import { crmV1ApiConfig } from './api/crm/v1/config.ts'
+import { crmV1Api } from './api/crm/v1/index.ts'
+import { healthCheckV1Config } from './api/health/v1/config.ts'
+import { healthCheckV1Api } from './api/health/v1/index.ts'
+import { healthCheckV2Config } from './api/health/v2/config.ts'
+import { healthCheckV2Api } from './api/health/v2/index.ts'
+import { ordDocumentV1Api } from './api/open-resource-discovery/v1/index.ts'
+import { PORT } from './config.ts'
+import { errorHandler } from './error/errorHandler.ts'
+import { sapEventCatalogDefinition } from './event/odm-finance-costobject/v1/eventCatalogDefinition.ts'
+import { logger } from './shared/logger.ts'
 
 const server = fastify({
   logger,
-  ignoreTrailingSlash: true,
+  routerOptions: {
+    ignoreTrailingSlash: true,
+  },
   exposeHeadRoutes: true,
 })
 
-// eslint-disable-next-line no-console
 initServer().catch(console.error)
 
 async function initServer(): Promise<void> {
@@ -53,7 +54,6 @@ async function initServer(): Promise<void> {
 }
 
 function closeGracefully(signal: string): void {
-  // eslint-disable-next-line no-console
   console.log(`Received signal to terminate: ${signal}`)
   process.exit()
 }

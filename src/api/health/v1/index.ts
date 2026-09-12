@@ -1,5 +1,5 @@
-import { FastifyInstance, FastifyRequest } from 'fastify'
-import { healthCheckV1Config } from './config.js'
+import type { FastifyInstance, FastifyRequest } from 'fastify'
+import { healthCheckV1Config } from './config.ts'
 
 /**
  * This is a typical health check API for health probes

@@ -1,12 +1,13 @@
-import { describe, expect, beforeEach, afterEach, it } from '@jest/globals'
-import { FastifyInstance, fastify } from 'fastify'
-import { astronomyV1Api } from '../api/astronomy/v1/index.js'
-import { crmV1Api } from '../api/crm/v1/index.js'
-import { healthCheckV1Api } from '../api/health/v1/index.js'
-import { healthCheckV2Api } from '../api/health/v2/index.js'
-import { ordDocumentV1Api } from '../api/open-resource-discovery/v1/index.js'
-import { errorHandler } from '../error/errorHandler.js'
-import { sapEventCatalogDefinition } from '../event/odm-finance-costobject/v1/eventCatalogDefinition.js'
+import assert from 'node:assert/strict'
+import { afterEach, beforeEach, describe, it } from 'node:test'
+import { type FastifyInstance, fastify } from 'fastify'
+import { astronomyV1Api } from '../api/astronomy/v1/index.ts'
+import { crmV1Api } from '../api/crm/v1/index.ts'
+import { healthCheckV1Api } from '../api/health/v1/index.ts'
+import { healthCheckV2Api } from '../api/health/v2/index.ts'
+import { ordDocumentV1Api } from '../api/open-resource-discovery/v1/index.ts'
+import { errorHandler } from '../error/errorHandler.ts'
+import { sapEventCatalogDefinition } from '../event/odm-finance-costobject/v1/eventCatalogDefinition.ts'
 
 describe('Server', () => {
   let app: FastifyInstance
@@ -14,7 +15,9 @@ describe('Server', () => {
   beforeEach(async () => {
     app = fastify({
       logger: false,
-      ignoreTrailingSlash: true,
+      routerOptions: {
+        ignoreTrailingSlash: true,
+      },
       exposeHeadRoutes: true,
     })
 
@@ -42,8 +45,8 @@ describe('Server', () => {
         url: '/health/v1',
       })
 
-      expect(response.statusCode).toBe(200)
-      expect(response.payload).toBe('OK')
+      assert.equal(response.statusCode, 200)
+      assert.equal(response.payload, 'OK')
     })
 
     it('should return 200 OK for health check v2', async () => {
@@ -52,8 +55,8 @@ describe('Server', () => {
         url: '/health/v2',
       })
 
-      expect(response.statusCode).toBe(200)
-      expect(JSON.parse(response.payload)).toEqual({ status: 'OK' })
+      assert.equal(response.statusCode, 200)
+      assert.deepEqual(JSON.parse(response.payload), { status: 'OK' })
     })
   })
 
@@ -64,7 +67,7 @@ describe('Server', () => {
         url: '/astronomy/v1/constellations',
       })
 
-      expect(response.statusCode).toBe(200)
+      assert.equal(response.statusCode, 200)
     })
 
     it('should require authentication for CRM API routes', async () => {
@@ -73,7 +76,7 @@ describe('Server', () => {
         url: '/crm/v1/customers',
       })
 
-      expect(response.statusCode).toBe(401)
+      assert.equal(response.statusCode, 401)
     })
   })
 
@@ -84,7 +87,7 @@ describe('Server', () => {
         url: '/non-existent-route',
       })
 
-      expect(response.statusCode).toBe(404)
+      assert.equal(response.statusCode, 404)
     })
   })
 })

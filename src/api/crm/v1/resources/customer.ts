@@ -1,10 +1,10 @@
-import { FastifyInstance, FastifyRequest, FastifySchema } from 'fastify'
 import { fastifyBasicAuth } from '@fastify/basic-auth'
-import { OpenAPIV3 } from 'openapi-types'
-import { CustomerData, customerData } from '../../../../data/customer/customers.js'
-import { NotFoundError } from '../../../../error/NotFoundError.js'
-import { basicAuthConfig } from '../../../shared/validateUserAuthorization.js'
-import { Customer, customerIdSchema, CustomersResponse } from '../models/Customer.js'
+import type { FastifyInstance, FastifyRequest, FastifySchema } from 'fastify'
+import type { OpenAPIV3 } from 'openapi-types'
+import { type CustomerData, customerData } from '../../../../data/customer/customers.ts'
+import { NotFoundError } from '../../../../error/NotFoundError.ts'
+import { basicAuthConfig } from '../../../shared/validateUserAuthorization.ts'
+import { type Customer, type CustomersResponse, customerIdSchema } from '../models/Customer.ts'
 
 export const customersResourceName = 'customers'
 export const openApiPaths: OpenAPIV3.PathsObject = {}
@@ -17,7 +17,6 @@ export async function customersResource(fastify: FastifyInstance): Promise<void>
   await fastify.register(fastifyBasicAuth, basicAuthConfig)
   fastify.addHook('onRequest', fastify.basicAuth)
   fastify.get('/', {}, getCustomersHandler)
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   fastify.get('/:id', { schema: getCustomersByIdSchema }, getCustomerByIdHandler)
 }
 
@@ -26,7 +25,7 @@ export async function customersResource(fastify: FastifyInstance): Promise<void>
 //////////////////////////////////////////
 
 function getCustomersHandler(req: FastifyRequest): CustomersResponse {
-  if (!req.user || !req.user.tenantId) {
+  if (!req.user?.tenantId) {
     throw new NotFoundError('No user / tenant ID provided')
   } else {
     return { value: mapCustomerData(customerData[req.user.tenantId] || []) }
@@ -87,7 +86,7 @@ interface GetCustomersByIdParams {
 }
 
 function getCustomerByIdHandler(req: FastifyRequest<{ Params: GetCustomersByIdParams }>): Customer {
-  if (!req.user || !req.user.tenantId) {
+  if (!req.user?.tenantId) {
     throw new NotFoundError('No user / tenant ID provided', req.params.id.toString())
   }
   const customers = mapCustomerData(customerData[req.user.tenantId])

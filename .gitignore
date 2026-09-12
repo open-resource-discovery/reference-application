@@ -28,7 +28,6 @@ reports
 
 # Cache Directories
 .npm
-.eslintcache
 
 # dotenv environment variables file
 .env

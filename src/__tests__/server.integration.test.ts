@@ -1,48 +1,39 @@
-import { describe, expect, it, beforeAll, afterAll } from '@jest/globals'
-import { FastifyInstance, fastify } from 'fastify'
-import { astronomyV1Api } from '../../src/api/astronomy/v1/index.js'
-import { crmV1Api } from '../../src/api/crm/v1/index.js'
-import { healthCheckV1Api } from '../../src/api/health/v1/index.js'
-import { healthCheckV2Api } from '../../src/api/health/v2/index.js'
-import { ordDocumentV1Api } from '../../src/api/open-resource-discovery/v1/index.js'
-import { errorHandler } from '../../src/error/errorHandler.js'
-import { sapEventCatalogDefinition } from '../../src/event/odm-finance-costobject/v1/eventCatalogDefinition.js'
-import { Constellation } from '../api/astronomy/v1/models/Constellation.js'
-import { ORDDocument } from '@open-resource-discovery/specification'
-import { SapEventCatalog } from '../event/shared/SapEventCatalog.js'
-import { ErrorItem } from '../shared/model/ErrorResponses.js'
+import assert from 'node:assert/strict'
+import { after, before, describe, it } from 'node:test'
+import type { OrdDocument } from '@open-resource-discovery/specification'
+import { type FastifyInstance, fastify } from 'fastify'
+import { astronomyV1Api } from '../../src/api/astronomy/v1/index.ts'
+import { crmV1Api } from '../../src/api/crm/v1/index.ts'
+import { healthCheckV1Api } from '../../src/api/health/v1/index.ts'
+import { healthCheckV2Api } from '../../src/api/health/v2/index.ts'
+import { ordDocumentV1Api } from '../../src/api/open-resource-discovery/v1/index.ts'
+import { errorHandler } from '../../src/error/errorHandler.ts'
+import { sapEventCatalogDefinition } from '../../src/event/odm-finance-costobject/v1/eventCatalogDefinition.ts'
+import type { Constellation } from '../api/astronomy/v1/models/Constellation.ts'
+import type { SapEventCatalog } from '../event/shared/SapEventCatalog.ts'
+import type { ErrorItem } from '../shared/model/ErrorResponses.ts'
+import type { SapOpenApiDocument } from '../shared/model/OpenAPI.ts'
 
 describe('Server Integration Tests', () => {
   let app: FastifyInstance
 
-  beforeAll(async () => {
+  before(async () => {
     app = fastify({
       logger: false,
     })
 
     app.setErrorHandler(errorHandler)
 
-    try {
-      await app.register(healthCheckV1Api, { prefix: '/health/v1' })
-      await app.register(healthCheckV2Api, { prefix: '/health/v2' })
-      await app.register(astronomyV1Api, { prefix: '/astronomy/v1' })
-      await app.register(crmV1Api, { prefix: '/crm/v1' })
-      await app.register(sapEventCatalogDefinition, { prefix: '/sap-events/v1' })
-      await app.register(ordDocumentV1Api, {})
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Error during plugin registration:', err)
-      throw err
-    }
+    await app.register(healthCheckV1Api, { prefix: '/health/v1' })
+    await app.register(healthCheckV2Api, { prefix: '/health/v2' })
+    await app.register(astronomyV1Api, { prefix: '/astronomy/v1' })
+    await app.register(crmV1Api, { prefix: '/crm/v1' })
+    await app.register(sapEventCatalogDefinition, { prefix: '/sap-events/v1' })
+    await app.register(ordDocumentV1Api, {})
   })
 
-  afterAll(async () => {
-    try {
-      await app.close()
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Error closing the server:', err)
-    }
+  after(async () => {
+    await app.close()
   })
 
   describe('Astronomy API Integration', () => {
@@ -52,13 +43,13 @@ describe('Server Integration Tests', () => {
         url: '/astronomy/v1/constellations',
       })
 
-      expect(response.statusCode).toBe(200)
+      assert.equal(response.statusCode, 200)
       const body = JSON.parse(response.payload) as { value: Constellation[] }
-      expect(body).toHaveProperty('value')
-      expect(Array.isArray(body.value)).toBe(true)
-      expect(body.value.length).toBeGreaterThan(0)
-      expect(body.value[0]).toHaveProperty('id')
-      expect(body.value[0]).toHaveProperty('name')
+      assert.ok('value' in body)
+      assert.ok(Array.isArray(body.value))
+      assert.ok(body.value.length > 0)
+      assert.ok('id' in body.value[0])
+      assert.ok('name' in body.value[0])
     })
 
     it('should retrieve a specific constellation', async () => {
@@ -67,12 +58,25 @@ describe('Server Integration Tests', () => {
         url: '/astronomy/v1/constellations/And',
       })
 
-      expect(response.statusCode).toBe(200)
+      assert.equal(response.statusCode, 200)
       const constellation = JSON.parse(response.payload) as { value: Constellation[] }
-      expect(constellation).toEqual({
+      assert.deepEqual(constellation, {
         id: 'And',
         name: 'Andromeda',
       })
+    })
+
+    it('should publish SAP-compliant OpenAPI metadata', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: '/astronomy/v1/openapi/oas3.json',
+      })
+
+      assert.equal(response.statusCode, 200)
+      const body = JSON.parse(response.payload) as SapOpenApiDocument
+      assert.equal(body['x-sap-shortText'], 'Explore constellations and retrieve their astronomical names.')
+      assert.ok(body.externalDocs?.url)
+      assert.ok(body.components?.securitySchemes?.optionalBasicAuth)
     })
   })
 
@@ -86,7 +90,7 @@ describe('Server Integration Tests', () => {
         url: '/crm/v1/customers',
       })
 
-      expect(response.statusCode).toBe(401)
+      assert.equal(response.statusCode, 401)
     })
 
     it('should reject invalid credentials', async () => {
@@ -98,7 +102,7 @@ describe('Server Integration Tests', () => {
         },
       })
 
-      expect(response.statusCode).toBe(401)
+      assert.equal(response.statusCode, 401)
     })
 
     it('should return customers list with valid credentials', async () => {
@@ -110,10 +114,23 @@ describe('Server Integration Tests', () => {
         },
       })
 
-      expect(response.statusCode).toBe(200)
+      assert.equal(response.statusCode, 200)
       const body = JSON.parse(response.payload) as { value: { id: string; name: string }[] }
-      expect(body).toHaveProperty('value')
-      expect(Array.isArray(body.value)).toBe(true)
+      assert.ok('value' in body)
+      assert.ok(Array.isArray(body.value))
+    })
+
+    it('should publish SAP-compliant OpenAPI metadata', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: '/crm/v1/openapi/oas3.json',
+      })
+
+      assert.equal(response.statusCode, 200)
+      const body = JSON.parse(response.payload) as SapOpenApiDocument
+      assert.equal(body['x-sap-shortText'], 'Manage tenant-specific customer records.')
+      assert.ok(body.externalDocs?.url)
+      assert.ok(body.components?.securitySchemes?.basicAuth)
     })
   })
 
@@ -124,8 +141,8 @@ describe('Server Integration Tests', () => {
         url: '/health/v1',
       })
 
-      expect(response.statusCode).toBe(200)
-      expect(response.payload).toBe('OK')
+      assert.equal(response.statusCode, 200)
+      assert.equal(response.payload, 'OK')
     })
 
     it('should return status object for v2 health check', async () => {
@@ -134,9 +151,9 @@ describe('Server Integration Tests', () => {
         url: '/health/v2',
       })
 
-      expect(response.statusCode).toBe(200)
+      assert.equal(response.statusCode, 200)
       const body = JSON.parse(response.payload) as { value: { id: string; name: string }[] }
-      expect(body).toEqual({ status: 'OK' })
+      assert.deepEqual(body, { status: 'OK' })
     })
   })
 
@@ -151,16 +168,17 @@ describe('Server Integration Tests', () => {
         url: '/.well-known/open-resource-discovery',
       })
 
-      expect(response.statusCode).toBe(200)
+      assert.equal(response.statusCode, 200)
       const body = JSON.parse(response.payload) as {
         openResourceDiscoveryV1: { documents: { perspective?: string; accessStrategies: { type: string }[] }[] }
       }
-      expect(body).toHaveProperty('openResourceDiscoveryV1')
-      expect(body.openResourceDiscoveryV1.documents).toContainEqual(
-        expect.objectContaining({
-          perspective: 'system-instance',
-          accessStrategies: [{ type: 'basic-auth' }],
-        }),
+      assert.ok('openResourceDiscoveryV1' in body)
+      assert.ok(
+        body.openResourceDiscoveryV1.documents.some(
+          (document) =>
+            document.perspective === 'system-instance' &&
+            document.accessStrategies.some((strategy) => strategy.type === 'basic-auth'),
+        ),
       )
     })
 
@@ -170,9 +188,12 @@ describe('Server Integration Tests', () => {
         url: '/open-resource-discovery/v1/documents/system-version',
       })
 
-      expect(response.statusCode).toBe(200)
-      const body = JSON.parse(response.payload) as Partial<ORDDocument>
-      expect(body).toHaveProperty('openResourceDiscovery')
+      assert.equal(response.statusCode, 200)
+      const body = JSON.parse(response.payload) as Partial<OrdDocument> & { packages?: { labels?: object }[] }
+      assert.ok(body.openResourceDiscovery)
+      assert.ok(body.policyLevels?.includes('sap:core:v1'))
+      assert.ok(body.entityTypes?.[0]?.lastUpdate)
+      assert.ok(body.packages?.[0]?.labels && 'example:customLabel' in body.packages[0].labels)
     })
 
     it('should require authentication for the system-instance ORD document', async () => {
@@ -181,7 +202,7 @@ describe('Server Integration Tests', () => {
         url: '/open-resource-discovery/v1/documents/system-instance',
       })
 
-      expect(response.statusCode).toBe(401)
+      assert.equal(response.statusCode, 401)
     })
 
     it('should reject invalid credentials for the system-instance ORD document', async () => {
@@ -193,26 +214,28 @@ describe('Server Integration Tests', () => {
         },
       })
 
-      expect(response.statusCode).toBe(401)
+      assert.equal(response.statusCode, 401)
     })
 
-    it.each([
+    for (const [tenantId, credentials] of [
       ['T1', tenantT1Credentials],
       ['T2', tenantT2Credentials],
-    ])('should infer tenant %s from Basic Auth', async (tenantId, credentials) => {
-      const response = await app.inject({
-        method: 'GET',
-        url: '/open-resource-discovery/v1/documents/system-instance',
-        headers: {
-          Authorization: `Basic ${credentials}`,
-        },
-      })
+    ] as const) {
+      it(`should infer tenant ${tenantId} from Basic Auth`, async () => {
+        const response = await app.inject({
+          method: 'GET',
+          url: '/open-resource-discovery/v1/documents/system-instance',
+          headers: {
+            Authorization: `Basic ${credentials}`,
+          },
+        })
 
-      expect(response.statusCode).toBe(200)
-      const body = JSON.parse(response.payload) as { description: string }
-      expect(body).toHaveProperty('openResourceDiscovery')
-      expect(body.description).toContain(tenantId)
-    })
+        assert.equal(response.statusCode, 200)
+        const body = JSON.parse(response.payload) as { openResourceDiscovery: string; description: string }
+        assert.ok(body.openResourceDiscovery)
+        assert.ok(body.description.includes(tenantId))
+      })
+    }
 
     it('should not let a query parameter override the authenticated tenant', async () => {
       const response = await app.inject({
@@ -223,10 +246,10 @@ describe('Server Integration Tests', () => {
         },
       })
 
-      expect(response.statusCode).toBe(200)
+      assert.equal(response.statusCode, 200)
       const body = JSON.parse(response.payload) as { description: string }
-      expect(body.description).toContain('T1')
-      expect(body.description).not.toContain('T2')
+      assert.ok(body.description.includes('T1'))
+      assert.ok(!body.description.includes('T2'))
     })
   })
 
@@ -237,10 +260,19 @@ describe('Server Integration Tests', () => {
         url: '/sap-events/v1/odm-finance-costobject.asyncapi2.json',
       })
 
-      expect(response.statusCode).toBe(200)
+      assert.equal(response.statusCode, 200)
       const body = JSON.parse(response.payload) as SapEventCatalog
-      expect(body).toHaveProperty('asyncapi')
-      expect(body).toHaveProperty('channels')
+      assert.ok(body.asyncapi)
+      assert.ok(body.channels)
+      assert.equal(body['x-sap-shortText'], 'Publish example finance cost center events.')
+      assert.ok(
+        body.components.messages.sap_odm_finance_costobject_CostCenter_Created_v1['x-sap-event-characteristics'],
+      )
+      assert.ok(body.components.messageTraits.CloudEventsContext['x-sap-event-source-parameters'])
+      assert.equal(
+        body.components.messageTraits.CloudEventsContext.headers.properties.source.const,
+        '/default/sap.foo.bar/public',
+      )
     })
 
     it('should return tenant-specific event catalog', async () => {
@@ -252,10 +284,14 @@ describe('Server Integration Tests', () => {
         },
       })
 
-      expect(response.statusCode).toBe(200)
+      assert.equal(response.statusCode, 200)
       const body = JSON.parse(response.payload) as SapEventCatalog
-      expect(body).toHaveProperty('asyncapi')
-      expect(body).toHaveProperty('channels')
+      assert.ok(body.asyncapi)
+      assert.ok(body.channels)
+      assert.equal(
+        body.components.messageTraits.CloudEventsContext.headers.properties.source.const,
+        '/default/sap.foo.bar/T1',
+      )
     })
   })
 
@@ -266,10 +302,10 @@ describe('Server Integration Tests', () => {
         url: '/invalid-url',
       })
 
-      expect(response.statusCode).toBe(404)
+      assert.equal(response.statusCode, 404)
       const error = JSON.parse(response.payload) as ErrorItem
-      expect(error).toHaveProperty('message')
-      expect(error).toHaveProperty('statusCode')
+      assert.ok('message' in error)
+      assert.ok('statusCode' in error)
     })
 
     it('should handle invalid methods', async () => {
@@ -278,7 +314,7 @@ describe('Server Integration Tests', () => {
         url: '/health/v1',
       })
 
-      expect(response.statusCode).toBe(404)
+      assert.equal(response.statusCode, 404)
     })
   })
 })

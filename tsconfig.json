@@ -1,15 +1,15 @@
 {
-  "extends": "@tsconfig/node20/tsconfig.json",
+  "extends": "@tsconfig/node26/tsconfig.json",
   "compilerOptions": {
     "module": "nodenext",
     "moduleResolution": "NodeNext",
     "outDir": "dist",
     "rootDir": ".",
-    "baseUrl": ".",
     "esModuleInterop": true,
     "resolveJsonModule": true,
+    "rewriteRelativeImportExtensions": true,
     "paths": {
-      "src/*": ["src/*"]
+      "src/*": ["./src/*"]
     },
     "types": ["node"],
     "isolatedModules": true

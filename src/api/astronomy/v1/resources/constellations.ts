@@ -1,8 +1,8 @@
-import { FastifyInstance, FastifyRequest, FastifySchema } from 'fastify'
-import { OpenAPIV3 } from 'openapi-types'
-import { ConstellationData, constellationData } from '../../../../data/astronomy/constellations.js'
-import { NotFoundError } from '../../../../error/NotFoundError.js'
-import { Constellation, constellationIdSchema, ConstellationsResponse } from '../models/Constellation.js'
+import type { FastifyInstance, FastifyRequest, FastifySchema } from 'fastify'
+import type { OpenAPIV3 } from 'openapi-types'
+import { type ConstellationData, constellationData } from '../../../../data/astronomy/constellations.ts'
+import { NotFoundError } from '../../../../error/NotFoundError.ts'
+import { type Constellation, type ConstellationsResponse, constellationIdSchema } from '../models/Constellation.ts'
 
 export const constellationsResourceName = 'constellations'
 export const openApiPaths: OpenAPIV3.PathsObject = {}
@@ -12,7 +12,6 @@ export const openApiPaths: OpenAPIV3.PathsObject = {}
  */
 export function constellationsResource(fastify: FastifyInstance): void {
   fastify.get('/', {}, getConstellationsHandler)
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   fastify.get('/:id', { schema: getConstellationsByIdSchema }, getConstellationByIdHandler)
 }
 

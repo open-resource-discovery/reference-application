@@ -83,12 +83,20 @@ The tenants and their configuration be found in [src/data/user/tenants.ts](/src/
 
 ### Prerequisites
 
-Install (Node.js](https://nodejs.org/en/) v20 or up
+Install [Node.js](https://nodejs.org/en/) v26 or newer.
 
 ### Run the app
+
 ```bash
 npm install
 npm run dev
+```
+
+The generated metadata uses the deployed application URL by default.
+Set `PUBLIC_URL` when consumers such as the ORD crawler must fetch all resource definitions from the local server.
+
+```bash
+PUBLIC_URL=http://127.0.0.1:8080 npm run dev
 ```
 
 ## ORD Implementation / Aspects

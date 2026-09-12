@@ -1,6 +1,6 @@
-import { v4 as uuidv4 } from 'uuid'
-import { CloudEvent } from '../../shared/CloudEvent.js'
-import { getEventSource } from '../../shared/eventConfig.js'
+import { randomUUID } from 'node:crypto'
+import type { CloudEvent } from '../../shared/CloudEvent.ts'
+import { getEventSource } from '../../shared/eventConfig.ts'
 
 /**
  * This is an incomplete and inofficial CostCenter Created event payload interface
@@ -17,10 +17,14 @@ export const costCenterCreatedType = 'sap.odm.finance.costobject.CostCenter.Crea
  * This is a noop function that would send the event occurrence to a subscriber / event broker
  * in the CloudEvent standard format
  */
-export function sendCostCenterCreated(payload: CostCenterCreated, subject: string, tenantId: string): CloudEvent {
+export function sendCostCenterCreated(
+  payload: CostCenterCreated,
+  subject: string,
+  tenantId: string,
+): CloudEvent<CostCenterCreated> {
   const cloudEvent = {
     specversion: '1.0',
-    id: uuidv4(),
+    id: randomUUID(),
     source: getEventSource(tenantId),
     type: costCenterCreatedType,
     subject: subject,

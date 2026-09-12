@@ -1,22 +1,21 @@
-import _ from 'lodash'
-import { APIResource, EntityType, EventResource, ORDDocument } from '@open-resource-discovery/specification'
-import { odmFinanceCostObjectEventConfig } from '../../../../event/odm-finance-costobject/v1/config.js'
-import { tenants } from '../../../../data/user/tenants.js'
-import { crmV1ApiConfig } from '../../../crm/v1/config.js'
-import { astronomyV1ApiConfig } from '../../../astronomy/v1/config.js'
+import type { ApiResource, EntityType, EventResource, OrdDocument } from '@open-resource-discovery/specification'
+import { tenants } from '../../../../data/user/tenants.ts'
+import { odmFinanceCostObjectEventConfig } from '../../../../event/odm-finance-costobject/v1/config.ts'
+import { astronomyV1ApiConfig } from '../../../astronomy/v1/config.ts'
+import { crmV1ApiConfig } from '../../../crm/v1/config.ts'
 import {
+  appNamespace,
+  basicAuthConsumptionBundle,
+  customAccessStrategyGlobalTenantId,
+  customAccessStrategyLocalTenantId,
   describedSystemInstance,
+  describedSystemVersion,
   noAuthConsumptionBundle,
   openAccessStrategy,
   ordReferenceAppApiPackage,
   ordReferenceAppEventsPackage,
   product,
-  appNamespace,
-  customAccessStrategyGlobalTenantId,
-  customAccessStrategyLocalTenantId,
-  describedSystemVersion,
-  basicAuthConsumptionBundle,
-} from './shared.js'
+} from './shared.ts'
 
 export const constellationEntityType: EntityType = {
   ordId: `${appNamespace}:entityType:Constellation:v1`,
@@ -27,10 +26,11 @@ export const constellationEntityType: EntityType = {
   description: 'Description of the local Constellation Model',
   visibility: 'public',
   releaseStatus: 'active',
+  lastUpdate: '2023-02-03T06:44:10Z',
   partOfPackage: ordReferenceAppApiPackage.ordId,
 }
 
-const astronomyV1ApiResource: APIResource = {
+const astronomyV1ApiResource: ApiResource = {
   ordId: `${appNamespace}:apiResource:${astronomyV1ApiConfig.apiNamespace}:${astronomyV1ApiConfig.apiMajorVersion}`,
   title: astronomyV1ApiConfig.apiName,
   shortDescription: 'The Astronomy API allows you to discover...',
@@ -67,7 +67,7 @@ const astronomyV1ApiResource: APIResource = {
   ],
 }
 
-const crmV1ApiResource: APIResource = {
+const crmV1ApiResource: ApiResource = {
   ordId: `${appNamespace}:apiResource:${crmV1ApiConfig.apiNamespace}:${crmV1ApiConfig.apiMajorVersion}`,
   title: crmV1ApiConfig.apiName,
   shortDescription: 'The CRM API allows you to manage customers...',
@@ -142,7 +142,7 @@ const odmFinanceCostObjectV1EventResource: EventResource = {
 /**
  * This is the complete ORD document that will be served through the ORD Document API
  */
-export const ordDocument: ORDDocument = {
+export const ordDocument: OrdDocument = {
   openResourceDiscovery: '1.12',
   policyLevels: ['sap:core:v1'],
   perspective: 'system-version',
@@ -167,8 +167,8 @@ export const ordDocument: ORDDocument = {
  * As we want to demonstrate a tenant specific ORD Document,
  * We'll return a different one per tenant, respecting some tenant configurations
  */
-export function getOrdDocumentForTenant(tenantId?: string): ORDDocument {
-  const tenantSpecificOrdDocument = _.cloneDeep(ordDocument)
+export function getOrdDocumentForTenant(tenantId?: string): OrdDocument {
+  const tenantSpecificOrdDocument = structuredClone(ordDocument)
 
   tenantSpecificOrdDocument.perspective = 'system-instance'
 
@@ -188,9 +188,9 @@ export function getOrdDocumentForTenant(tenantId?: string): ORDDocument {
   const tenantConfig = tenants[tenantId]
   if (!tenantConfig.enabledApis.includes('crm')) {
     // Do not describe the CRM V1 API if the tenant does not have it available
-    _.remove(tenantSpecificOrdDocument.apiResources || [], {
-      ordId: crmV1ApiResource.ordId,
-    })
+    tenantSpecificOrdDocument.apiResources = tenantSpecificOrdDocument.apiResources?.filter(
+      (apiResource) => apiResource.ordId !== crmV1ApiResource.ordId,
+    )
   }
 
   return tenantSpecificOrdDocument

@@ -1,4 +1,4 @@
-import { DetailError, ErrorItem, ErrorResponse } from '../model/ErrorResponses.js'
+import type { DetailError, ErrorItem, ErrorResponse } from '../model/ErrorResponses.ts'
 
 /**
  * Base class for all custom errors

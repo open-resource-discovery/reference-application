@@ -1,4 +1,4 @@
-import { OAS3ResponseObjectDictionary, OAS3SchemaObjectDictionary } from './OpenAPI.js'
+import type { OAS3ResponseObjectDictionary, OAS3SchemaObjectDictionary } from './OpenAPI.ts'
 
 export interface ErrorResponse {
   error: ErrorItem

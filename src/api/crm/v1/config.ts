@@ -1,7 +1,6 @@
-import _ from 'lodash'
-import { OpenAPIV3 } from 'openapi-types'
-import { LOCAL_URL, PUBLIC_URL } from '../../../config.js'
-import { tenants } from '../../../data/user/tenants.js'
+import type { OpenAPIV3 } from 'openapi-types'
+import { LOCAL_URL, PUBLIC_URL } from '../../../config.ts'
+import { tenants } from '../../../data/user/tenants.ts'
 import {
   errorOASResponse400,
   errorOASResponse401,
@@ -9,9 +8,10 @@ import {
   errorOASResponse404,
   errorOASResponse500,
   errorSchemas,
-} from '../../../shared/model/ErrorResponses.js'
-import { customerSchema, customersResponseSchema } from './models/Customer.js'
-import { customersResourceName, openApiPaths } from './resources/customer.js'
+} from '../../../shared/model/ErrorResponses.ts'
+import type { SapOpenApiDocument } from '../../../shared/model/OpenAPI.ts'
+import { customerSchema, customersResponseSchema } from './models/Customer.ts'
+import { customersResourceName, openApiPaths } from './resources/customer.ts'
 
 const apiName = 'CRM API'
 const apiNamespace = 'crm'
@@ -32,13 +32,18 @@ export const crmV1ApiConfig = {
  *
  * This API definition is system instance aware and potentially different between tenants
  */
-export function getCrmV1ApiDefinition(tenantId?: string): OpenAPIV3.Document {
-  const openApiDefinition: OpenAPIV3.Document = {
+export function getCrmV1ApiDefinition(tenantId?: string): SapOpenApiDocument {
+  const openApiDefinition: SapOpenApiDocument = {
     openapi: '3.0.0',
     info: {
       title: apiName,
       description: 'This is a sample CRM API, which is system instance aware.',
       version: apiVersion,
+    },
+    'x-sap-shortText': 'Manage tenant-specific customer records.',
+    externalDocs: {
+      description: 'CRM API documentation',
+      url: 'https://github.com/open-resource-discovery/reference-application/tree/main/src/api/crm/v1',
     },
     security: [
       {
@@ -107,7 +112,7 @@ export function getCrmV1ApiDefinition(tenantId?: string): OpenAPIV3.Document {
           fieldExtensions[fieldName] = fieldJsonSchema
         }
 
-        const customerSchemaExtended = _.cloneDeep(customerSchema)
+        const customerSchemaExtended = structuredClone(customerSchema)
         customerSchemaExtended.properties = customerSchemaExtended.properties || {}
         customerSchemaExtended.properties.extension = {
           type: 'object',
@@ -115,7 +120,7 @@ export function getCrmV1ApiDefinition(tenantId?: string): OpenAPIV3.Document {
           properties: fieldExtensions,
         }
 
-        openApiDefinition.components!.schemas!.Customer = customerSchemaExtended
+        openApiDefinition.components.schemas.Customer = customerSchemaExtended
       }
     }
   }

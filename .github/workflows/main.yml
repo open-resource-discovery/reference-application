@@ -6,14 +6,18 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   Build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: 26
           cache: npm
 
       - name: Install NPM dependencies
@@ -22,11 +26,8 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: ESLint
-        run: npm run lint:ci
-
-      - name: Prettier
-        run: npm run prettier:ci
+      - name: Biome
+        run: npm run check
 
       - name: Test
         run: npm run test:ci

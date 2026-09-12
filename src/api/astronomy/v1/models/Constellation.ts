@@ -1,4 +1,4 @@
-import { OpenAPIV3 } from 'openapi-types'
+import type { OpenAPIV3 } from 'openapi-types'
 
 /**
  * A Constellation is a group of stars forming a recognizable pattern
