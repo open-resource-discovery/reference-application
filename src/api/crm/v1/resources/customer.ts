@@ -1,10 +1,10 @@
 import { fastifyBasicAuth } from '@fastify/basic-auth'
 import type { FastifyInstance, FastifyRequest, FastifySchema } from 'fastify'
 import type { OpenAPIV3 } from 'openapi-types'
-import { type CustomerData, customerData } from '../../../../data/customer/customers.js'
-import { NotFoundError } from '../../../../error/NotFoundError.js'
-import { basicAuthConfig } from '../../../shared/validateUserAuthorization.js'
-import { type Customer, type CustomersResponse, customerIdSchema } from '../models/Customer.js'
+import { type CustomerData, customerData } from '../../../../data/customer/customers.ts'
+import { NotFoundError } from '../../../../error/NotFoundError.ts'
+import { basicAuthConfig } from '../../../shared/validateUserAuthorization.ts'
+import { type Customer, type CustomersResponse, customerIdSchema } from '../models/Customer.ts'
 
 export const customersResourceName = 'customers'
 export const openApiPaths: OpenAPIV3.PathsObject = {}

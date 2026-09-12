@@ -1,13 +1,13 @@
-import { LOCAL_URL, PUBLIC_URL } from '../../../config.js'
+import { LOCAL_URL, PUBLIC_URL } from '../../../config.ts'
 import {
   errorOASResponse400,
   errorOASResponse404,
   errorOASResponse500,
   errorSchemas,
-} from '../../../shared/model/ErrorResponses.js'
-import type { SapOpenApiDocument } from '../../../shared/model/OpenAPI.js'
-import { constellationSchema, constellationsResponseSchema } from './models/Constellation.js'
-import { openApiPaths } from './resources/constellations.js'
+} from '../../../shared/model/ErrorResponses.ts'
+import type { SapOpenApiDocument } from '../../../shared/model/OpenAPI.ts'
+import { constellationSchema, constellationsResponseSchema } from './models/Constellation.ts'
+import { openApiPaths } from './resources/constellations.ts'
 
 const apiName = 'Astronomy API'
 const apiNamespace = 'astronomy'

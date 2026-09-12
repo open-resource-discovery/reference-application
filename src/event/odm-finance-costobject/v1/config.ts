@@ -1,6 +1,6 @@
-import { getEventSource } from '../../shared/eventConfig.js'
-import type { SapEventCatalog } from '../../shared/SapEventCatalog.js'
-import { costCenterCreatedType } from './CostCenter.js'
+import { getEventSource } from '../../shared/eventConfig.ts'
+import type { SapEventCatalog } from '../../shared/SapEventCatalog.ts'
+import { costCenterCreatedType } from './CostCenter.ts'
 
 const eventResourceName = 'odm-finance-costobject'
 const eventResourceTitle = 'ODM Finance Cost Center Events'

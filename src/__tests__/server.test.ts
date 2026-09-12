@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict'
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { type FastifyInstance, fastify } from 'fastify'
-import { astronomyV1Api } from '../api/astronomy/v1/index.js'
-import { crmV1Api } from '../api/crm/v1/index.js'
-import { healthCheckV1Api } from '../api/health/v1/index.js'
-import { healthCheckV2Api } from '../api/health/v2/index.js'
-import { ordDocumentV1Api } from '../api/open-resource-discovery/v1/index.js'
-import { errorHandler } from '../error/errorHandler.js'
-import { sapEventCatalogDefinition } from '../event/odm-finance-costobject/v1/eventCatalogDefinition.js'
+import { astronomyV1Api } from '../api/astronomy/v1/index.ts'
+import { crmV1Api } from '../api/crm/v1/index.ts'
+import { healthCheckV1Api } from '../api/health/v1/index.ts'
+import { healthCheckV2Api } from '../api/health/v2/index.ts'
+import { ordDocumentV1Api } from '../api/open-resource-discovery/v1/index.ts'
+import { errorHandler } from '../error/errorHandler.ts'
+import { sapEventCatalogDefinition } from '../event/odm-finance-costobject/v1/eventCatalogDefinition.ts'
 
 describe('Server', () => {
   let app: FastifyInstance

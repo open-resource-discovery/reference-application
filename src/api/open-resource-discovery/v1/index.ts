@@ -1,11 +1,11 @@
 import { fastifyBasicAuth } from '@fastify/basic-auth'
 import fastifyETag from '@fastify/etag'
 import type { FastifyInstance } from 'fastify'
-import { UnauthorizedError } from '../../../error/UnauthorizedError.js'
-import { basicAuthConfig } from '../../shared/validateUserAuthorization.js'
-import { ordDocumentApiV1Config } from './config.js'
-import { ordConfiguration } from './data/configuration.js'
-import { getOrdDocumentForTenant, ordDocument } from './data/document.js'
+import { UnauthorizedError } from '../../../error/UnauthorizedError.ts'
+import { basicAuthConfig } from '../../shared/validateUserAuthorization.ts'
+import { ordDocumentApiV1Config } from './config.ts'
+import { ordConfiguration } from './data/configuration.ts'
+import { getOrdDocumentForTenant, ordDocument } from './data/document.ts'
 
 export async function ordDocumentV1Api(fastify: FastifyInstance): Promise<void> {
   fastify.log.info(`Registering ${ordDocumentApiV1Config.apiName}...`)

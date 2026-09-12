@@ -1,6 +1,6 @@
-import { v4 as uuidv4 } from 'uuid'
-import type { CloudEvent } from '../../shared/CloudEvent.js'
-import { getEventSource } from '../../shared/eventConfig.js'
+import { randomUUID } from 'node:crypto'
+import type { CloudEvent } from '../../shared/CloudEvent.ts'
+import { getEventSource } from '../../shared/eventConfig.ts'
 
 /**
  * This is an incomplete and inofficial CostCenter Created event payload interface
@@ -24,7 +24,7 @@ export function sendCostCenterCreated(
 ): CloudEvent<CostCenterCreated> {
   const cloudEvent = {
     specversion: '1.0',
-    id: uuidv4(),
+    id: randomUUID(),
     source: getEventSource(tenantId),
     type: costCenterCreatedType,
     subject: subject,

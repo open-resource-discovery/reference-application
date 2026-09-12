@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify'
-import { astronomyV1ApiConfig } from './config.js'
-import { constellationsResource, constellationsResourceName } from './resources/constellations.js'
-import { openApiResource, openApiResourceName } from './resources/openApi.js'
+import { astronomyV1ApiConfig } from './config.ts'
+import { constellationsResource, constellationsResourceName } from './resources/constellations.ts'
+import { openApiResource, openApiResourceName } from './resources/openApi.ts'
 
 /**
  * Astronomy V1 API

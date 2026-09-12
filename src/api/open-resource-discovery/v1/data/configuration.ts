@@ -1,5 +1,5 @@
 import type { OrdConfiguration } from '@open-resource-discovery/specification'
-import { basicAuthAccessStrategy, openAccessStrategy } from './shared.js'
+import { basicAuthAccessStrategy, openAccessStrategy } from './shared.ts'
 
 export const ordConfiguration: OrdConfiguration = {
   openResourceDiscoveryV1: {

@@ -9,7 +9,7 @@ import type {
   SystemInstance,
   SystemVersion,
 } from '@open-resource-discovery/specification'
-import { PUBLIC_URL } from '../../../../config.js'
+import { PUBLIC_URL } from '../../../../config.ts'
 
 const packageJson = JSON.parse(readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf-8')) as {
   version: string

@@ -1,8 +1,8 @@
 import type { FastifyError, FastifyReply, FastifyRequest } from 'fastify'
-import { BackendError } from '../shared/error/BackendError.js'
-import { InputValidationError } from './InputValidationError.js'
-import { InternalServerError } from './InternalServerError.js'
-import { UnauthorizedError } from './UnauthorizedError.js'
+import { BackendError } from '../shared/error/BackendError.ts'
+import { InputValidationError } from './InputValidationError.ts'
+import { InternalServerError } from './InternalServerError.ts'
+import { UnauthorizedError } from './UnauthorizedError.ts'
 
 /**
  * This error handler will convert the various kind of errors that could happen

@@ -5,6 +5,7 @@
     "includes": [
       "*.{json,js,mjs,md}",
       ".github/**",
+      "scripts/**",
       "src/**",
       "!dist",
       "!node_modules",

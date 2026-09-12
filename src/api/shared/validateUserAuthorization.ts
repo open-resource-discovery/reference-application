@@ -1,10 +1,9 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
-import _ from 'lodash'
-import { globalTenantIdToLocalTenantIdMapping } from '../../data/user/tenantMapping.js'
-import { type TenantConfiguration, tenants } from '../../data/user/tenants.js'
-import { apiUsersAndPasswords } from '../../data/user/users.js'
-import { UnauthorizedError } from '../../error/UnauthorizedError.js'
-import type { CustomRequest } from '../../types/types.js'
+import { globalTenantIdToLocalTenantIdMapping } from '../../data/user/tenantMapping.ts'
+import { type TenantConfiguration, tenants } from '../../data/user/tenants.ts'
+import { apiUsersAndPasswords } from '../../data/user/users.ts'
+import { UnauthorizedError } from '../../error/UnauthorizedError.ts'
+import type { CustomRequest } from '../../types/types.ts'
 
 export interface UserInfo {
   userName: string
@@ -61,7 +60,7 @@ export function getTenantIdsFromHeader(req: CustomRequest): {
   if (req.query['local-tenant-id']) {
     localTenantId = req.query['local-tenant-id']
   } else {
-    localTenantId = _.isArray(req.headers['local-tenant-id'])
+    localTenantId = Array.isArray(req.headers['local-tenant-id'])
       ? req.headers['local-tenant-id'].join()
       : req.headers['local-tenant-id']
   }
@@ -69,7 +68,7 @@ export function getTenantIdsFromHeader(req: CustomRequest): {
   if (req.query['global-tenant-id']) {
     globalTenantId = req.query['global-tenant-id']
   } else {
-    globalTenantId = _.isArray(req.headers['global-tenant-id'])
+    globalTenantId = Array.isArray(req.headers['global-tenant-id'])
       ? req.headers['global-tenant-id'].join()
       : req.headers['global-tenant-id']
   }

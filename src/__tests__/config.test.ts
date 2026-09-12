@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { getPublicUrl } from '../config.js'
+import { getPublicUrl } from '../config.ts'
 
 describe('Configuration', () => {
   it('uses the deployed application URL by default', () => {

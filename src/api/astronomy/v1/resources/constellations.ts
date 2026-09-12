@@ -1,8 +1,8 @@
 import type { FastifyInstance, FastifyRequest, FastifySchema } from 'fastify'
 import type { OpenAPIV3 } from 'openapi-types'
-import { type ConstellationData, constellationData } from '../../../../data/astronomy/constellations.js'
-import { NotFoundError } from '../../../../error/NotFoundError.js'
-import { type Constellation, type ConstellationsResponse, constellationIdSchema } from '../models/Constellation.js'
+import { type ConstellationData, constellationData } from '../../../../data/astronomy/constellations.ts'
+import { NotFoundError } from '../../../../error/NotFoundError.ts'
+import { type Constellation, type ConstellationsResponse, constellationIdSchema } from '../models/Constellation.ts'
 
 export const constellationsResourceName = 'constellations'
 export const openApiPaths: OpenAPIV3.PathsObject = {}

@@ -1,9 +1,8 @@
 import type { ApiResource, EntityType, EventResource, OrdDocument } from '@open-resource-discovery/specification'
-import _ from 'lodash'
-import { tenants } from '../../../../data/user/tenants.js'
-import { odmFinanceCostObjectEventConfig } from '../../../../event/odm-finance-costobject/v1/config.js'
-import { astronomyV1ApiConfig } from '../../../astronomy/v1/config.js'
-import { crmV1ApiConfig } from '../../../crm/v1/config.js'
+import { tenants } from '../../../../data/user/tenants.ts'
+import { odmFinanceCostObjectEventConfig } from '../../../../event/odm-finance-costobject/v1/config.ts'
+import { astronomyV1ApiConfig } from '../../../astronomy/v1/config.ts'
+import { crmV1ApiConfig } from '../../../crm/v1/config.ts'
 import {
   appNamespace,
   basicAuthConsumptionBundle,
@@ -16,7 +15,7 @@ import {
   ordReferenceAppApiPackage,
   ordReferenceAppEventsPackage,
   product,
-} from './shared.js'
+} from './shared.ts'
 
 export const constellationEntityType: EntityType = {
   ordId: `${appNamespace}:entityType:Constellation:v1`,
@@ -169,7 +168,7 @@ export const ordDocument: OrdDocument = {
  * We'll return a different one per tenant, respecting some tenant configurations
  */
 export function getOrdDocumentForTenant(tenantId?: string): OrdDocument {
-  const tenantSpecificOrdDocument = _.cloneDeep(ordDocument)
+  const tenantSpecificOrdDocument = structuredClone(ordDocument)
 
   tenantSpecificOrdDocument.perspective = 'system-instance'
 
@@ -189,9 +188,9 @@ export function getOrdDocumentForTenant(tenantId?: string): OrdDocument {
   const tenantConfig = tenants[tenantId]
   if (!tenantConfig.enabledApis.includes('crm')) {
     // Do not describe the CRM V1 API if the tenant does not have it available
-    _.remove(tenantSpecificOrdDocument.apiResources || [], {
-      ordId: crmV1ApiResource.ordId,
-    })
+    tenantSpecificOrdDocument.apiResources = tenantSpecificOrdDocument.apiResources?.filter(
+      (apiResource) => apiResource.ordId !== crmV1ApiResource.ordId,
+    )
   }
 
   return tenantSpecificOrdDocument
