@@ -194,6 +194,12 @@ describe('Server Integration Tests', () => {
       assert.ok(body.policyLevels?.includes('sap:core:v1'))
       assert.ok(body.entityTypes?.[0]?.lastUpdate)
       assert.ok(body.packages?.[0]?.labels && 'example:customLabel' in body.packages[0].labels)
+      assert.equal(
+        body.apiResources?.some((resource) =>
+          resource.apiResourceLinks?.some((link) => link.url.includes('/swagger-ui.html')),
+        ),
+        false,
+      )
     })
 
     it('should require authentication for the system-instance ORD document', async () => {
