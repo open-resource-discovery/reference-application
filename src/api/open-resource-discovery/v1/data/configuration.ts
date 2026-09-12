@@ -1,7 +1,7 @@
-import { ORDConfiguration } from '@open-resource-discovery/specification'
+import { OrdConfiguration } from '@open-resource-discovery/specification'
 import { basicAuthAccessStrategy, openAccessStrategy } from './shared.js'
 
-export const ordConfiguration: ORDConfiguration = {
+export const ordConfiguration: OrdConfiguration = {
   openResourceDiscoveryV1: {
     documents: [
       // Serve static metadata with open access strategy, ignore tenant headers

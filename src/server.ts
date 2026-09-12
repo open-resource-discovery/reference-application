@@ -17,7 +17,9 @@ import { logger } from './shared/logger.js'
 
 const server = fastify({
   logger,
-  ignoreTrailingSlash: true,
+  routerOptions: {
+    ignoreTrailingSlash: true,
+  },
   exposeHeadRoutes: true,
 })
 

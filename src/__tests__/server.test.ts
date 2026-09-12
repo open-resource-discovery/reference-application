@@ -14,7 +14,9 @@ describe('Server', () => {
   beforeEach(async () => {
     app = fastify({
       logger: false,
-      ignoreTrailingSlash: true,
+      routerOptions: {
+        ignoreTrailingSlash: true,
+      },
       exposeHeadRoutes: true,
     })
 

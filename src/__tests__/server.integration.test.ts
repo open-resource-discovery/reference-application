@@ -8,7 +8,7 @@ import { ordDocumentV1Api } from '../../src/api/open-resource-discovery/v1/index
 import { errorHandler } from '../../src/error/errorHandler.js'
 import { sapEventCatalogDefinition } from '../../src/event/odm-finance-costobject/v1/eventCatalogDefinition.js'
 import { Constellation } from '../api/astronomy/v1/models/Constellation.js'
-import { ORDDocument } from '@open-resource-discovery/specification'
+import { OrdDocument } from '@open-resource-discovery/specification'
 import { SapEventCatalog } from '../event/shared/SapEventCatalog.js'
 import { ErrorItem } from '../shared/model/ErrorResponses.js'
 
@@ -74,6 +74,19 @@ describe('Server Integration Tests', () => {
         name: 'Andromeda',
       })
     })
+
+    it('should publish SAP-compliant OpenAPI metadata', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: '/astronomy/v1/openapi/oas3.json',
+      })
+
+      expect(response.statusCode).toBe(200)
+      const body = JSON.parse(response.payload) as Record<string, unknown>
+      expect(body['x-sap-shortText']).toBe('Explore constellations and retrieve their astronomical names.')
+      expect(body).toHaveProperty('externalDocs.url')
+      expect(body).toHaveProperty('components.securitySchemes.optionalBasicAuth')
+    })
   })
 
   describe('CRM API Integration', () => {
@@ -114,6 +127,19 @@ describe('Server Integration Tests', () => {
       const body = JSON.parse(response.payload) as { value: { id: string; name: string }[] }
       expect(body).toHaveProperty('value')
       expect(Array.isArray(body.value)).toBe(true)
+    })
+
+    it('should publish SAP-compliant OpenAPI metadata', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: '/crm/v1/openapi/oas3.json',
+      })
+
+      expect(response.statusCode).toBe(200)
+      const body = JSON.parse(response.payload) as Record<string, unknown>
+      expect(body['x-sap-shortText']).toBe('Manage tenant-specific customer records.')
+      expect(body).toHaveProperty('externalDocs.url')
+      expect(body).toHaveProperty('components.securitySchemes.basicAuth')
     })
   })
 
@@ -171,8 +197,11 @@ describe('Server Integration Tests', () => {
       })
 
       expect(response.statusCode).toBe(200)
-      const body = JSON.parse(response.payload) as Partial<ORDDocument>
+      const body = JSON.parse(response.payload) as Partial<OrdDocument> & { packages?: { labels?: object }[] }
       expect(body).toHaveProperty('openResourceDiscovery')
+      expect(body.policyLevels).toContain('sap:core:v1')
+      expect(body.entityTypes?.[0]).toHaveProperty('lastUpdate')
+      expect(body.packages?.[0]?.labels).toHaveProperty('example:customLabel')
     })
 
     it('should require authentication for the system-instance ORD document', async () => {
@@ -241,6 +270,14 @@ describe('Server Integration Tests', () => {
       const body = JSON.parse(response.payload) as SapEventCatalog
       expect(body).toHaveProperty('asyncapi')
       expect(body).toHaveProperty('channels')
+      expect(body['x-sap-shortText']).toBe('Publish example finance cost center events.')
+      expect(body).toHaveProperty(
+        'components.messages.sap_odm_finance_costobject_CostCenter_Created_v1.x-sap-event-characteristics',
+      )
+      expect(body).toHaveProperty('components.messageTraits.CloudEventsContext.x-sap-event-source-parameters')
+      expect(body.components.messageTraits.CloudEventsContext.headers.properties.source.const).toBe(
+        '/default/sap.foo.bar/public',
+      )
     })
 
     it('should return tenant-specific event catalog', async () => {
@@ -256,6 +293,9 @@ describe('Server Integration Tests', () => {
       const body = JSON.parse(response.payload) as SapEventCatalog
       expect(body).toHaveProperty('asyncapi')
       expect(body).toHaveProperty('channels')
+      expect(body.components.messageTraits.CloudEventsContext.headers.properties.source.const).toBe(
+        '/default/sap.foo.bar/T1',
+      )
     })
   })
 

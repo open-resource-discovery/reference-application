@@ -28,6 +28,7 @@ export function getOdmCostObjectSapEventCatalogDefinition(tenantId?: string): Sa
   const eventCatalog: SapEventCatalog = {
     asyncapi: '2.0.0',
     'x-sap-catalog-spec-version': '1.1',
+    'x-sap-shortText': 'Publish example finance cost center events.',
     info: {
       title: eventResourceTitle,
       version: eventResourceVersion,
@@ -46,6 +47,11 @@ export function getOdmCostObjectSapEventCatalogDefinition(tenantId?: string): Sa
       messages: {
         sap_odm_finance_costobject_CostCenter_Created_v1: {
           name: costCenterCreatedType,
+          'x-sap-event-characteristics': {
+            'instance-identification': 'key-subject',
+            sequencing: 'instance-precedence',
+            'state-transfer': 'full-after-image',
+          },
           headers: {
             properties: {
               type: {
@@ -77,7 +83,21 @@ export function getOdmCostObjectSapEventCatalogDefinition(tenantId?: string): Sa
       },
       messageTraits: {
         CloudEventsContext: {
-          'x-sap-event-source': '/{region}/sap.s4/{instanceId}',
+          'x-sap-event-source': '/{region}/sap.foo.bar/{instanceId}',
+          'x-sap-event-source-parameters': {
+            region: {
+              description: 'The region in which the application is deployed.',
+              schema: {
+                type: 'string',
+              },
+            },
+            instanceId: {
+              description: 'The local tenant identifier.',
+              schema: {
+                type: 'string',
+              },
+            },
+          },
           headers: {
             type: 'object',
             properties: {
@@ -90,6 +110,7 @@ export function getOdmCostObjectSapEventCatalogDefinition(tenantId?: string): Sa
               source: {
                 description: 'Identifies the context in which an event happened.',
                 type: 'string',
+                const: getEventSource(tenantId || 'public'),
                 format: 'uri-reference',
                 minLength: 7,
                 maxLength: 64,
@@ -153,16 +174,5 @@ export function getOdmCostObjectSapEventCatalogDefinition(tenantId?: string): Sa
       },
     },
   }
-  if (tenantId) {
-    // If we have a tenant ID, we MUST add it to all messages headers as a const value
-    for (const messageName in eventCatalog.components.messages) {
-      const msg = eventCatalog.components.messages[messageName]
-      msg.headers = msg.headers || {}
-      msg.headers.source = {
-        const: getEventSource(tenantId),
-      }
-    }
-  }
-
   return eventCatalog
 }

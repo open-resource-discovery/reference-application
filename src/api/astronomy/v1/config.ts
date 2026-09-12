@@ -1,4 +1,3 @@
-import { OpenAPIV3 } from 'openapi-types'
 import { LOCAL_URL, PUBLIC_URL } from '../../../config.js'
 import {
   errorOASResponse400,
@@ -8,6 +7,7 @@ import {
 } from '../../../shared/model/ErrorResponses.js'
 import { constellationSchema, constellationsResponseSchema } from './models/Constellation.js'
 import { openApiPaths } from './resources/constellations.js'
+import { SapOpenApiDocument } from '../../../shared/model/OpenAPI.js'
 
 const apiName = 'Astronomy API'
 const apiNamespace = 'astronomy'
@@ -23,13 +23,18 @@ export const astronomyV1ApiConfig = {
   apiVersion,
 }
 
-export function getAstronomyV1ApiDefinition(): OpenAPIV3.Document {
+export function getAstronomyV1ApiDefinition(): SapOpenApiDocument {
   return {
     openapi: '3.0.0',
     info: {
       title: apiName,
       description: 'This is just a sample API',
       version: apiVersion,
+    },
+    'x-sap-shortText': 'Explore constellations and retrieve their astronomical names.',
+    externalDocs: {
+      description: 'Astronomy API documentation',
+      url: 'https://github.com/open-resource-discovery/reference-application/tree/main/src/api/astronomy/v1',
     },
     servers: [
       {
@@ -49,6 +54,13 @@ export function getAstronomyV1ApiDefinition(): OpenAPIV3.Document {
       ...openApiPaths,
     },
     components: {
+      securitySchemes: {
+        optionalBasicAuth: {
+          type: 'http',
+          scheme: 'basic',
+          description: 'Authentication is optional because the Astronomy API is publicly accessible.',
+        },
+      },
       schemas: {
         Constellation: constellationSchema,
         ConstellationsResponse: constellationsResponseSchema,

@@ -1,6 +1,7 @@
 import {
-  AccessStrategy,
   ConsumptionBundle,
+  MetadataDefinitionAccessStrategy,
+  OrdV1DocumentAccessStrategy,
   Package,
   Product,
   SystemInstance,
@@ -47,7 +48,7 @@ export const ordReferenceAppApiPackage: Package = {
   description:
     'This reference application demonstrates how Open Resource Discovery (ORD) can be implemented, demonstrating different resources and discovery aspects',
   version: '1.0.0',
-  policyLevel: 'sap:core:v1',
+  policyLevels: ['sap:core:v1'],
   partOfProducts: [product.ordId],
   vendor: vendorSapReference,
   tags: ['reference application'],
@@ -68,7 +69,7 @@ export const ordReferenceAppApiPackage: Package = {
     },
   ],
   labels: {
-    customLabel: ['labels are more flexible than tags as you can define your own keys'],
+    'example:customLabel': ['labels are more flexible than tags as you can define your own keys'],
   },
 }
 
@@ -109,22 +110,22 @@ export const basicAuthConsumptionBundle: ConsumptionBundle = {
 /**
  * This is a custom access strategy that is specific to the ORD Reference application
  */
-export const openAccessStrategy: AccessStrategy = {
+export const openAccessStrategy = {
   type: 'open',
-}
+} satisfies OrdV1DocumentAccessStrategy & MetadataDefinitionAccessStrategy
 
 /**
  * Resources using this strategy derive their tenant context from the
  * authenticated user.
  */
-export const basicAuthAccessStrategy: AccessStrategy = {
+export const basicAuthAccessStrategy = {
   type: 'basic-auth',
-}
+} satisfies OrdV1DocumentAccessStrategy & MetadataDefinitionAccessStrategy
 
 /**
  * This is a custom access strategy that is specific to the ORD Reference application
  */
-export const customAccessStrategyGlobalTenantId: AccessStrategy = {
+export const customAccessStrategyGlobalTenantId = {
   type: 'custom',
   customType: `${appNamespace}:open-global-tenant-id:v1`,
   customDescription:
@@ -132,12 +133,12 @@ export const customAccessStrategyGlobalTenantId: AccessStrategy = {
     'The tenant is selected by providing a SAP global tenant ID header.\n' +
     'To understand how to use this access strategy, please read the documentation on the ' +
     '[ORD Reference App Access Strategies](https://github.com/open-resource-discovery/reference-application#access-strategies).',
-}
+} satisfies OrdV1DocumentAccessStrategy & MetadataDefinitionAccessStrategy
 
 /**
  * This is a custom access strategy that is specific to the ORD Reference application
  */
-export const customAccessStrategyLocalTenantId: AccessStrategy = {
+export const customAccessStrategyLocalTenantId = {
   type: 'custom',
   customType: `${appNamespace}:open-local-tenant-id:v1`,
   customDescription:
@@ -145,4 +146,4 @@ export const customAccessStrategyLocalTenantId: AccessStrategy = {
     'The tenant is selected by providing a local tenant ID header.\n' +
     'To understand how to use this access strategy, please read the documentation on the ' +
     '[ORD Reference App Access Strategies](https://github.com/open-resource-discovery/reference-application#access-strategies).',
-}
+} satisfies OrdV1DocumentAccessStrategy & MetadataDefinitionAccessStrategy

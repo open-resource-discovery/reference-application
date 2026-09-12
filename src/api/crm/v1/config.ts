@@ -12,6 +12,7 @@ import {
 } from '../../../shared/model/ErrorResponses.js'
 import { customerSchema, customersResponseSchema } from './models/Customer.js'
 import { customersResourceName, openApiPaths } from './resources/customer.js'
+import { SapOpenApiDocument } from '../../../shared/model/OpenAPI.js'
 
 const apiName = 'CRM API'
 const apiNamespace = 'crm'
@@ -32,13 +33,18 @@ export const crmV1ApiConfig = {
  *
  * This API definition is system instance aware and potentially different between tenants
  */
-export function getCrmV1ApiDefinition(tenantId?: string): OpenAPIV3.Document {
-  const openApiDefinition: OpenAPIV3.Document = {
+export function getCrmV1ApiDefinition(tenantId?: string): SapOpenApiDocument {
+  const openApiDefinition: SapOpenApiDocument = {
     openapi: '3.0.0',
     info: {
       title: apiName,
       description: 'This is a sample CRM API, which is system instance aware.',
       version: apiVersion,
+    },
+    'x-sap-shortText': 'Manage tenant-specific customer records.',
+    externalDocs: {
+      description: 'CRM API documentation',
+      url: 'https://github.com/open-resource-discovery/reference-application/tree/main/src/api/crm/v1',
     },
     security: [
       {
