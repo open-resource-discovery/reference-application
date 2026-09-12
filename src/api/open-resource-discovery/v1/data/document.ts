@@ -42,12 +42,6 @@ const astronomyV1ApiResource: ApiResource = {
   partOfPackage: ordReferenceAppApiPackage.ordId,
   partOfConsumptionBundles: [{ ordId: noAuthConsumptionBundle.ordId }],
   apiProtocol: 'rest',
-  apiResourceLinks: [
-    {
-      type: 'api-documentation',
-      url: '/swagger-ui.html?urls.primaryName=Astronomy%20V1%20API',
-    },
-  ],
   resourceDefinitions: [
     {
       type: 'openapi-v3',
@@ -83,12 +77,6 @@ const crmV1ApiResource: ApiResource = {
     },
   ],
   apiProtocol: 'rest',
-  apiResourceLinks: [
-    {
-      type: 'api-documentation',
-      url: '/swagger-ui.html?urls.primaryName=CRM%20V1%20API',
-    },
-  ],
   resourceDefinitions: [
     {
       type: 'openapi-v3',
