@@ -99,6 +99,12 @@ Set `PUBLIC_URL` when consumers such as the ORD crawler must fetch all resource 
 PUBLIC_URL=http://127.0.0.1:8080 npm run dev
 ```
 
+## Deployment
+
+Successful CI runs on `main` deploy the application to the `CORE_CF` organization's `open-discovery` space in SAP BTP Cloud Foundry.
+The workflow uses a rolling deployment so the existing instance remains available while the replacement starts.
+Configure the `CF_USERNAME` and `CF_PASSWORD` repository secrets with credentials that have the Space Developer role in that space.
+
 ## ORD Implementation / Aspects
 
 | Feature                 | Status |
