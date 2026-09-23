@@ -13,8 +13,8 @@ import type { SapOpenApiDocument } from '../../../shared/model/OpenAPI.ts'
 import { customerSchema, customersResponseSchema } from './models/Customer.ts'
 import { customersResourceName, openApiPaths } from './resources/customer.ts'
 
-const apiName = 'CRM API'
-const apiNamespace = 'crm'
+const apiName = 'ISS SAMPLE API'
+const apiNamespace = 'iss'
 const apiMajorVersion = 'v1'
 const apiEntryPoint = `${apiNamespace}/${apiMajorVersion}`
 const apiVersion = '1.0.0' // full semver API version

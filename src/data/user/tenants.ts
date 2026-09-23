@@ -26,7 +26,7 @@ export interface Tenants {
 }
 
 export interface TenantConfiguration {
-  /** APIs that have been enabled for this tenant. Astronomy and Health are always available. */
+  /** APIs that have been enabled for this tenant. Health is always available. */
   enabledApis: 'crm'[]
   /** Additional field extensions (will result in customer specific properties in API interfaces) */
   fieldExtensions?: {

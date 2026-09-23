@@ -35,14 +35,14 @@ export const describedSystemVersion: SystemVersion = {
 }
 
 export const product: Product = {
-  ordId: `${appNamespace}:product:ord-reference-app:`,
+  ordId: `${appNamespace}:product:Intelligent_Selling_Services:`,
   title: 'ORD Reference App',
   vendor: vendorSapReference,
   shortDescription: 'Open Resource Discovery Reference Application',
 }
 
 export const ordReferenceAppApiPackage: Package = {
-  ordId: `${appNamespace}:package:ord-reference-app-apis:v1`,
+  ordId: `${appNamespace}:package:Intelligent_Selling_Services-apis:v1`,
   title: 'ORD Reference Application APIs',
   shortDescription: packageJson.description,
   description:
@@ -71,12 +71,6 @@ export const ordReferenceAppApiPackage: Package = {
   labels: {
     'example:customLabel': ['labels are more flexible than tags as you can define your own keys'],
   },
-}
-
-export const ordReferenceAppEventsPackage: Package = {
-  ...ordReferenceAppApiPackage,
-  ordId: `${appNamespace}:package:ord-reference-app:v1`,
-  title: 'ORD Reference Application Events',
 }
 
 export const noAuthConsumptionBundle: ConsumptionBundle = {

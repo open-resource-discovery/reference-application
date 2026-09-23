@@ -1,13 +1,11 @@
 import assert from 'node:assert/strict'
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { type FastifyInstance, fastify } from 'fastify'
-import { astronomyV1Api } from '../api/astronomy/v1/index.ts'
 import { crmV1Api } from '../api/crm/v1/index.ts'
 import { healthCheckV1Api } from '../api/health/v1/index.ts'
 import { healthCheckV2Api } from '../api/health/v2/index.ts'
 import { ordDocumentV1Api } from '../api/open-resource-discovery/v1/index.ts'
 import { errorHandler } from '../error/errorHandler.ts'
-import { sapEventCatalogDefinition } from '../event/odm-finance-costobject/v1/eventCatalogDefinition.ts'
 
 describe('Server', () => {
   let app: FastifyInstance
@@ -27,9 +25,7 @@ describe('Server', () => {
     await Promise.all([
       app.register(healthCheckV1Api, { prefix: '/health/v1' }),
       app.register(healthCheckV2Api, { prefix: '/health/v2' }),
-      app.register(astronomyV1Api, { prefix: '/astronomy/v1' }),
       app.register(crmV1Api, { prefix: '/crm/v1' }),
-      app.register(sapEventCatalogDefinition, { prefix: '/sap-events/v1' }),
       app.register(ordDocumentV1Api, {}),
     ])
   })
@@ -61,15 +57,6 @@ describe('Server', () => {
   })
 
   describe('API Registration', () => {
-    it('should register astronomy API routes', async () => {
-      const response = await app.inject({
-        method: 'GET',
-        url: '/astronomy/v1/constellations',
-      })
-
-      assert.equal(response.statusCode, 200)
-    })
-
     it('should require authentication for CRM API routes', async () => {
       const response = await app.inject({
         method: 'GET',

@@ -2,8 +2,8 @@ import { getEventSource } from '../../shared/eventConfig.ts'
 import type { SapEventCatalog } from '../../shared/SapEventCatalog.ts'
 import { costCenterCreatedType } from './CostCenter.ts'
 
-const eventResourceName = 'odm-finance-costobject'
-const eventResourceTitle = 'ODM Finance Cost Center Events'
+const eventResourceName = 'iss-odm-finance-costobject'
+const eventResourceTitle = 'ISS-ODM Finance Cost Center Events'
 const eventResourceDescription =
   'This is an example event catalog that contains only a partial ODM finance cost center V1 event'
 const eventResourceMajorVersion = 'v0'

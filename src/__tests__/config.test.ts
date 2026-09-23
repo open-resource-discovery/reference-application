@@ -4,7 +4,7 @@ import { getPublicUrl } from '../config.ts'
 
 describe('Configuration', () => {
   it('uses the deployed application URL by default', () => {
-    assert.equal(getPublicUrl({}), 'https://ord-reference-application.cfapps.sap.hana.ondemand.com')
+    assert.equal(getPublicUrl({}), 'https://ordSampleAppMD.cfapps.eu01-canary.hana.ondemand.com')
   })
 
   it('allows the public URL to be overridden for local crawls', () => {

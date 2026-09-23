@@ -1,8 +1,6 @@
 import * as path from 'node:path'
 import { fastifyStatic } from '@fastify/static'
 import { fastify } from 'fastify'
-import { astronomyV1ApiConfig } from './api/astronomy/v1/config.ts'
-import { astronomyV1Api } from './api/astronomy/v1/index.ts'
 import { crmV1ApiConfig } from './api/crm/v1/config.ts'
 import { crmV1Api } from './api/crm/v1/index.ts'
 import { healthCheckV1Config } from './api/health/v1/config.ts'
@@ -12,7 +10,6 @@ import { healthCheckV2Api } from './api/health/v2/index.ts'
 import { ordDocumentV1Api } from './api/open-resource-discovery/v1/index.ts'
 import { PORT } from './config.ts'
 import { errorHandler } from './error/errorHandler.ts'
-import { sapEventCatalogDefinition } from './event/odm-finance-costobject/v1/eventCatalogDefinition.ts'
 import { logger } from './shared/logger.ts'
 
 const server = fastify({
@@ -33,9 +30,7 @@ async function initServer(): Promise<void> {
   await Promise.all([
     server.register(healthCheckV1Api, { prefix: `/${healthCheckV1Config.apiEntryPoint}` }),
     server.register(healthCheckV2Api, { prefix: `/${healthCheckV2Config.apiEntryPoint}` }),
-    server.register(astronomyV1Api, { prefix: `/${astronomyV1ApiConfig.apiEntryPoint}` }),
     server.register(crmV1Api, { prefix: `/${crmV1ApiConfig.apiEntryPoint}` }),
-    server.register(sapEventCatalogDefinition, { prefix: '/sap-events/v1' }),
     server.register(ordDocumentV1Api, {}),
   ])
 

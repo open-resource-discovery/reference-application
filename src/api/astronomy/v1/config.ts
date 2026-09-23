@@ -9,8 +9,8 @@ import type { SapOpenApiDocument } from '../../../shared/model/OpenAPI.ts'
 import { constellationSchema, constellationsResponseSchema } from './models/Constellation.ts'
 import { openApiPaths } from './resources/constellations.ts'
 
-const apiName = 'Astronomy API'
-const apiNamespace = 'astronomy'
+const apiName = 'ISS Astronomy API'
+const apiNamespace = 'otheriss'
 const apiMajorVersion = 'v1'
 const apiEntryPoint = `${apiNamespace}/${apiMajorVersion}`
 const apiVersion = '1.0.3' // full semver API version

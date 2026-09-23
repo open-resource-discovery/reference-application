@@ -1,7 +1,5 @@
-import type { ApiResource, EntityType, EventResource, OrdDocument } from '@open-resource-discovery/specification'
+import type { ApiResource, OrdDocument } from '@open-resource-discovery/specification'
 import { tenants } from '../../../../data/user/tenants.ts'
-import { odmFinanceCostObjectEventConfig } from '../../../../event/odm-finance-costobject/v1/config.ts'
-import { astronomyV1ApiConfig } from '../../../astronomy/v1/config.ts'
 import { crmV1ApiConfig } from '../../../crm/v1/config.ts'
 import {
   appNamespace,
@@ -13,59 +11,8 @@ import {
   noAuthConsumptionBundle,
   openAccessStrategy,
   ordReferenceAppApiPackage,
-  ordReferenceAppEventsPackage,
   product,
 } from './shared.ts'
-
-export const constellationEntityType: EntityType = {
-  ordId: `${appNamespace}:entityType:Constellation:v1`,
-  localId: 'Constellation',
-  version: '1.0.0',
-  title: 'Constellation',
-  level: 'aggregate',
-  description: 'Description of the local Constellation Model',
-  visibility: 'public',
-  releaseStatus: 'active',
-  lastUpdate: '2023-02-03T06:44:10Z',
-  partOfPackage: ordReferenceAppApiPackage.ordId,
-}
-
-const astronomyV1ApiResource: ApiResource = {
-  ordId: `${appNamespace}:apiResource:${astronomyV1ApiConfig.apiNamespace}:${astronomyV1ApiConfig.apiMajorVersion}`,
-  title: astronomyV1ApiConfig.apiName,
-  shortDescription: 'The Astronomy API allows you to discover...',
-  description: 'A longer description of this API with **markdown** \n## headers\n etc...',
-  version: astronomyV1ApiConfig.apiVersion,
-  lastUpdate: '2023-02-03T06:44:10Z',
-  visibility: 'public',
-  releaseStatus: 'active',
-  partOfPackage: ordReferenceAppApiPackage.ordId,
-  partOfConsumptionBundles: [{ ordId: noAuthConsumptionBundle.ordId }],
-  apiProtocol: 'rest',
-  apiResourceLinks: [
-    {
-      type: 'api-documentation',
-      url: '/swagger-ui.html?urls.primaryName=Astronomy%20V1%20API',
-    },
-  ],
-  resourceDefinitions: [
-    {
-      type: 'openapi-v3',
-      mediaType: 'application/json',
-      url: '/astronomy/v1/openapi/oas3.json',
-      accessStrategies: [openAccessStrategy],
-    },
-  ],
-  entryPoints: [`/${astronomyV1ApiConfig.apiEntryPoint}`],
-  extensible: {
-    supported: 'no',
-  },
-  exposedEntityTypes: [
-    {
-      ordId: `${appNamespace}:entityType:Constellation:v1`,
-    },
-  ],
-}
 
 const crmV1ApiResource: ApiResource = {
   ordId: `${appNamespace}:apiResource:${crmV1ApiConfig.apiNamespace}:${crmV1ApiConfig.apiMajorVersion}`,
@@ -93,7 +40,7 @@ const crmV1ApiResource: ApiResource = {
     {
       type: 'openapi-v3',
       mediaType: 'application/json',
-      url: '/crm/v1/openapi/oas3.json',
+      url: '/iss/v1/openapi/oas3.json',
       accessStrategies: [customAccessStrategyGlobalTenantId, customAccessStrategyLocalTenantId, openAccessStrategy],
     },
   ],
@@ -111,33 +58,6 @@ const crmV1ApiResource: ApiResource = {
   ],
 }
 
-const odmFinanceCostObjectV1EventResource: EventResource = {
-  ordId: `${appNamespace}:eventResource:${odmFinanceCostObjectEventConfig.eventResourceName}:${odmFinanceCostObjectEventConfig.eventResourceMajorVersion}`,
-  title: odmFinanceCostObjectEventConfig.eventResourceTitle,
-  shortDescription: 'Example ODM finance cost center event',
-  description: odmFinanceCostObjectEventConfig.eventResourceDescription,
-  version: odmFinanceCostObjectEventConfig.eventResourceVersion,
-  lastUpdate: '2023-02-03T06:44:10Z',
-  releaseStatus: 'beta',
-  partOfPackage: ordReferenceAppEventsPackage.ordId,
-  visibility: 'public',
-  resourceDefinitions: [
-    {
-      type: 'asyncapi-v2',
-      mediaType: 'application/json',
-      url: '/sap-events/v1/odm-finance-costobject.asyncapi2.json',
-      accessStrategies: [customAccessStrategyGlobalTenantId, customAccessStrategyLocalTenantId, openAccessStrategy],
-    },
-  ],
-  extensible: {
-    supported: 'no',
-  },
-  exposedEntityTypes: [
-    {
-      ordId: 'sap.odm.finance:entityType:CostObject:v1',
-    },
-  ],
-}
 
 /**
  * This is the complete ORD document that will be served through the ORD Document API
@@ -150,17 +70,12 @@ export const ordDocument: OrdDocument = {
   description: 'This is an example ORD document which describes the entire reference app in one document.',
   describedSystemInstance: describedSystemInstance,
   products: [product],
-  packages: [ordReferenceAppApiPackage, ordReferenceAppEventsPackage],
-  apiResources: [astronomyV1ApiResource, crmV1ApiResource],
-  eventResources: [odmFinanceCostObjectV1EventResource],
+  packages: [ordReferenceAppApiPackage],
+  apiResources: [crmV1ApiResource],
+  eventResources: [],
   consumptionBundles: [noAuthConsumptionBundle],
-  entityTypes: [constellationEntityType],
-  tombstones: [
-    {
-      ordId: `${appNamespace}:apiResource:${astronomyV1ApiConfig.apiNamespace}:v0`,
-      removalDate: '2021-03-12T06:44:10Z',
-    },
-  ],
+  entityTypes: [],
+  tombstones: [],
 }
 
 /**

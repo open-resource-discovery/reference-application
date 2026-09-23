@@ -1,0 +1,13 @@
+---
+applications:
+- name: ORDSampleApp
+  #random-route: true
+  routes:
+    - route: ordSampleAppMD.cfapps.eu01-canary.hana.ondemand.com
+  path: .
+  memory: 256M
+  buildpacks:
+  - nodejs_buildpack
+  #env:
+  #  NPM_CONFIG_PRODUCTION: false
+

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Swagger UI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css" />
+  <style>
+    body { margin: 0; }
+  </style>
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search)
+      // Accept ?url=/path/to/oas3.json  OR legacy ?urls.primaryName=<title> matched against known specs
+      const knownSpecs = [
+        { name: 'CRM V1 API', url: '/iss/v1/openapi/oas3.json' },
+      ]
+
+      let specUrl = params.get('url')
+
+      if (!specUrl) {
+        const primaryName = params.get('urls.primaryName')
+        const match = primaryName && knownSpecs.find(s => s.name === primaryName)
+        specUrl = match ? match.url : knownSpecs[0].url
+      }
+
+      SwaggerUIBundle({
+        url: specUrl,
+        dom_id: '#swagger-ui',
+        presets: [SwaggerUIBundle.presets.apis, SwaggerUIBundle.SwaggerUIStandalonePreset],
+        layout: 'BaseLayout',
+        deepLinking: true,
+      })
+    })()
+  </script>
+</body>
+</html>

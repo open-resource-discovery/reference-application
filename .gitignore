@@ -36,3 +36,5 @@ reports
 /manifest.yaml
 /deploy.sh
 /.cfignore
+
+/.idea/

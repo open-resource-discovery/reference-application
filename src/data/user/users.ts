@@ -21,4 +21,8 @@ export const apiUsersAndPasswords: ApiUsersAndPasswords = {
     password: 'foo',
     tenantId: 'T2',
   },
+  mariusz: {
+      password: 'mariusz1234',
+      tenantId: 'T1',
+    }
 }

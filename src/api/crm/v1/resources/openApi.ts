@@ -8,7 +8,7 @@ import { getCrmV1ApiDefinition } from '../config.ts'
 export const openApiResourceName = 'openapi'
 
 /**
- * As part of the Astronomy V1 API we also return the OpenAPI 3 definition
+ * As part of the CRM V1 API we also return the OpenAPI 3 definition
  * as a self description of the service and to expose the API contract
  *
  * This will later be referenced through ORD.
