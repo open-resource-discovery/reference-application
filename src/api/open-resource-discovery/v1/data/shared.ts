@@ -35,7 +35,8 @@ export const describedSystemVersion: SystemVersion = {
 }
 
 export const product: Product = {
-  ordId: `${appNamespace}:product:ord-reference-app:`,
+  // Product IDs use the vendor namespace, not the application's system namespace.
+  ordId: 'sap:product:ord-reference-app:',
   title: 'ORD Reference App',
   vendor: vendorSapReference,
   shortDescription: 'Open Resource Discovery Reference Application',
