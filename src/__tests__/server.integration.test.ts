@@ -205,6 +205,36 @@ describe('Server Integration Tests', () => {
       assert.equal(response.statusCode, 401)
     })
 
+    for (const [perspective, credentials] of [
+      ['system-version', undefined],
+      ['system-instance', tenantT1Credentials],
+      ['system-instance', tenantT2Credentials],
+    ] as const) {
+      it(`should publish vendor-namespaced Product IDs and matching package references in ${perspective}`, async () => {
+        const response = await app.inject({
+          method: 'GET',
+          url: `/open-resource-discovery/v1/documents/${perspective}`,
+          headers: credentials ? { Authorization: `Basic ${credentials}` } : {},
+        })
+
+        assert.equal(response.statusCode, 200)
+        const body = JSON.parse(response.payload) as OrdDocument
+        const productIds = new Set(body.products?.map((product) => product.ordId))
+        assert.ok(productIds.has('foo:product:ord-reference-app:'))
+        assert.ok(body.vendors?.some((vendor) => vendor.ordId === 'foo:vendor:Example:'))
+        assert.equal(body.products?.[0]?.vendor, 'foo:vendor:Example:')
+        for (const productId of productIds) {
+          // ORD ID Construction requires one vendor fragment and an empty version fragment for Products.
+          assert.match(productId, /^[a-z0-9]+:product:[a-zA-Z0-9._-]+:$/)
+        }
+        for (const metadataPackage of body.packages ?? []) {
+          for (const productId of metadataPackage.partOfProducts ?? []) {
+            assert.ok(productIds.has(productId), `Unresolved Product reference: ${productId}`)
+          }
+        }
+      })
+    }
+
     it('should reject invalid credentials for the system-instance ORD document', async () => {
       const response = await app.inject({
         method: 'GET',
