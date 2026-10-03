@@ -220,7 +220,9 @@ describe('Server Integration Tests', () => {
         assert.equal(response.statusCode, 200)
         const body = JSON.parse(response.payload) as OrdDocument
         const productIds = new Set(body.products?.map((product) => product.ordId))
-        assert.ok(productIds.has('sap:product:ord-reference-app:'))
+        assert.ok(productIds.has('foo:product:ord-reference-app:'))
+        assert.ok(body.vendors?.some((vendor) => vendor.ordId === 'foo:vendor:Example:'))
+        assert.equal(body.products?.[0]?.vendor, 'foo:vendor:Example:')
         for (const productId of productIds) {
           // ORD ID Construction requires one vendor fragment and an empty version fragment for Products.
           assert.match(productId, /^[a-z0-9]+:product:[a-zA-Z0-9._-]+:$/)
