@@ -2,7 +2,7 @@
 
 # Open Resource Discovery - Reference Application
 
-This is a reference application that demonstrates the implementation of [Open Resource Discovery](https://open-resource-discovery.github.io/specification/) (ORD) protocol.
+This is a reference application that demonstrates the implementation of [Open Resource Discovery](https://open-resource-discovery.org/) (ORD) protocol.
 
 It consists of a backend implemented in TypeScript and Node.js that exposes resources such as APIs and Events.
 Those resources are described via metadata through ORD and applicable resource definition formats such as [OpenAPI v3.0](https://spec.openapis.org/oas/v3.0.3).
