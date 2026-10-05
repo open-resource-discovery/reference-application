@@ -99,6 +99,78 @@ body,
   outline-offset: 2px;
 }
 
+.reference-app__perspectives {
+  display: flex;
+  flex: none;
+  min-height: 3.2rem;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid #dfe5e8;
+  background: #f7f9fa;
+  padding: 0.5rem clamp(1rem, 4vw, 3rem);
+}
+
+.reference-app__perspectives > span {
+  color: #52606b;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.reference-app__perspectives > div {
+  display: flex;
+  border: 1px solid #b9cac8;
+  border-radius: 0.5rem;
+  background: #fff;
+  padding: 0.15rem;
+}
+
+.reference-app__perspectives button {
+  border: 0;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: #52606b;
+  cursor: pointer;
+  padding: 0.35rem 0.7rem;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.reference-app__perspectives button[aria-pressed='true'] {
+  background: #dff3f0;
+  color: #095f58;
+}
+
+.reference-app__perspectives button:focus-visible {
+  outline: 2px solid #17877d;
+  outline-offset: 2px;
+}
+
+.reference-app__perspectives p {
+  margin: 0;
+  color: #52606b;
+  font-size: 0.78rem;
+}
+
+.reference-app__perspectives code {
+  border-radius: 0.25rem;
+  background: #edf5f4;
+  color: #176b63;
+  padding: 0.08rem 0.3rem;
+}
+
+.reference-app__perspectives a {
+  color: #176b63;
+  font-weight: 650;
+}
+
+.reference-app__perspectives a:focus-visible {
+  outline: 2px solid #17877d;
+  outline-offset: 2px;
+}
+
 .reference-app main {
   flex: 1;
   min-height: 0;
@@ -117,5 +189,10 @@ body,
 
   .reference-app__intro nav {
     justify-content: flex-start;
+  }
+
+  .reference-app__perspectives {
+    align-items: flex-start;
+    flex-wrap: wrap;
   }
 }
