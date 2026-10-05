@@ -1,40 +1,14 @@
 import assert from 'node:assert/strict'
-import { after, before, describe, it } from 'node:test'
+import { describe, it } from 'node:test'
 import type { OrdDocument } from '@open-resource-discovery/specification'
-import { type FastifyInstance, fastify } from 'fastify'
-import { astronomyV1Api } from '../../src/api/astronomy/v1/index.ts'
-import { crmV1Api } from '../../src/api/crm/v1/index.ts'
-import { healthCheckV1Api } from '../../src/api/health/v1/index.ts'
-import { healthCheckV2Api } from '../../src/api/health/v2/index.ts'
-import { ordDocumentV1Api } from '../../src/api/open-resource-discovery/v1/index.ts'
-import { errorHandler } from '../../src/error/errorHandler.ts'
-import { sapEventCatalogDefinition } from '../../src/event/odm-finance-costobject/v1/eventCatalogDefinition.ts'
 import type { Constellation } from '../api/astronomy/v1/models/Constellation.ts'
 import type { SapEventCatalog } from '../event/shared/SapEventCatalog.ts'
 import type { ErrorItem } from '../shared/model/ErrorResponses.ts'
 import type { SapOpenApiDocument } from '../shared/model/OpenAPI.ts'
+import { inject } from './testClient.ts'
 
 describe('Server Integration Tests', () => {
-  let app: FastifyInstance
-
-  before(async () => {
-    app = fastify({
-      logger: false,
-    })
-
-    app.setErrorHandler(errorHandler)
-
-    await app.register(healthCheckV1Api, { prefix: '/health/v1' })
-    await app.register(healthCheckV2Api, { prefix: '/health/v2' })
-    await app.register(astronomyV1Api, { prefix: '/astronomy/v1' })
-    await app.register(crmV1Api, { prefix: '/crm/v1' })
-    await app.register(sapEventCatalogDefinition, { prefix: '/sap-events/v1' })
-    await app.register(ordDocumentV1Api, {})
-  })
-
-  after(async () => {
-    await app.close()
-  })
+  const app = { inject }
 
   describe('Astronomy API Integration', () => {
     it('should retrieve constellations list', async () => {
@@ -91,6 +65,7 @@ describe('Server Integration Tests', () => {
       })
 
       assert.equal(response.statusCode, 401)
+      assert.match(response.headers.get('www-authenticate') ?? '', /^Basic /)
     })
 
     it('should reject invalid credentials', async () => {
@@ -155,6 +130,17 @@ describe('Server Integration Tests', () => {
       const body = JSON.parse(response.payload) as { value: { id: string; name: string }[] }
       assert.deepEqual(body, { status: 'OK' })
     })
+
+    it('should support HEAD and trailing slashes', async () => {
+      const response = await app.inject({
+        method: 'HEAD',
+        url: '/health/v2/',
+      })
+
+      assert.equal(response.statusCode, 200)
+      assert.equal(response.payload, '')
+      assert.equal(response.headers.get('content-type'), 'application/json; charset=utf-8')
+    })
   })
 
   describe('ORD Document API Integration', () => {
@@ -194,6 +180,23 @@ describe('Server Integration Tests', () => {
       assert.ok(body.policyLevels?.includes('sap:core:v1'))
       assert.ok(body.entityTypes?.[0]?.lastUpdate)
       assert.ok(body.packages?.[0]?.labels && 'example:customLabel' in body.packages[0].labels)
+    })
+
+    it('should support conditional requests with an ETag', async () => {
+      const firstResponse = await app.inject({
+        method: 'GET',
+        url: '/open-resource-discovery/v1/documents/system-version',
+      })
+      const etag = firstResponse.headers.get('etag')
+      assert.ok(etag)
+
+      const cachedResponse = await app.inject({
+        method: 'GET',
+        url: '/open-resource-discovery/v1/documents/system-version',
+        headers: { 'if-none-match': etag },
+      })
+      assert.equal(cachedResponse.statusCode, 304)
+      assert.equal(cachedResponse.payload, '')
     })
 
     it('should require authentication for the system-instance ORD document', async () => {
@@ -292,6 +295,15 @@ describe('Server Integration Tests', () => {
         body.components.messageTraits.CloudEventsContext.headers.properties.source.const,
         '/default/sap.foo.bar/T1',
       )
+    })
+
+    it('should reject unknown tenant identifiers', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: '/sap-events/v1/odm-finance-costobject.asyncapi2.json?local-tenant-id=unknown',
+      })
+
+      assert.equal(response.statusCode, 401)
     })
   })
 

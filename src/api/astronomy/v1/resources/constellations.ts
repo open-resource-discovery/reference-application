@@ -1,25 +1,16 @@
-import type { FastifyInstance, FastifyRequest, FastifySchema } from 'fastify'
 import type { OpenAPIV3 } from 'openapi-types'
 import { type ConstellationData, constellationData } from '../../../../data/astronomy/constellations.ts'
 import { NotFoundError } from '../../../../error/NotFoundError.ts'
-import { type Constellation, type ConstellationsResponse, constellationIdSchema } from '../models/Constellation.ts'
+import type { Constellation, ConstellationsResponse } from '../models/Constellation.ts'
 
 export const constellationsResourceName = 'constellations'
 export const openApiPaths: OpenAPIV3.PathsObject = {}
-
-/**
- * Constellations related HTTP operations
- */
-export function constellationsResource(fastify: FastifyInstance): void {
-  fastify.get('/', {}, getConstellationsHandler)
-  fastify.get('/:id', { schema: getConstellationsByIdSchema }, getConstellationByIdHandler)
-}
 
 //////////////////////////////////////////
 // GET /constellations                  //
 //////////////////////////////////////////
 
-function getConstellationsHandler(): ConstellationsResponse {
+export function getConstellations(): ConstellationsResponse {
   return { value: mapConstellationData(constellationData) }
 }
 
@@ -61,26 +52,13 @@ openApiPaths[getConstellationsPath] = {
 // GET /constellations/:id              //
 //////////////////////////////////////////
 
-const getConstellationsByIdSchema: FastifySchema = {
-  params: {
-    type: 'object',
-    properties: {
-      id: constellationIdSchema,
-    },
-  },
-}
-
-interface GetConstellationsByIdParams {
-  id: string
-}
-
-function getConstellationByIdHandler(req: FastifyRequest<{ Params: GetConstellationsByIdParams }>): Constellation {
+export function getConstellationById(id: string): Constellation {
   const constellations = mapConstellationData(constellationData)
-  const found = constellations.find((el) => el.id === req.params.id)
+  const found = constellations.find((el) => el.id === id)
   if (found) {
     return found
   } else {
-    throw new NotFoundError(`Could not find constellation with ID: ${req.params.id}`, req.params.id)
+    throw new NotFoundError(`Could not find constellation with ID: ${id}`, id)
   }
 }
 

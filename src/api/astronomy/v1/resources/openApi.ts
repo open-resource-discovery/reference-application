@@ -1,4 +1,3 @@
-import type { FastifyInstance } from 'fastify'
 import type { OpenAPIV3 } from 'openapi-types'
 import { getAstronomyV1ApiDefinition } from '../config.ts'
 
@@ -10,10 +9,6 @@ export const openApiResourceName = 'openapi'
  *
  * This will later be referenced through ORD.
  */
-export function openApiResource(fastify: FastifyInstance): void {
-  fastify.get('/oas3.json', {}, getOpenApiDefinitionHandler)
-}
-
-function getOpenApiDefinitionHandler(): OpenAPIV3.Document {
+export function getOpenApiDefinition(): OpenAPIV3.Document {
   return getAstronomyV1ApiDefinition()
 }
