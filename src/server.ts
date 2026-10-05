@@ -1,61 +1,58 @@
-import * as path from 'node:path'
-import { fastifyStatic } from '@fastify/static'
-import { fastify } from 'fastify'
-import { astronomyV1ApiConfig } from './api/astronomy/v1/config.ts'
-import { astronomyV1Api } from './api/astronomy/v1/index.ts'
-import { crmV1ApiConfig } from './api/crm/v1/config.ts'
-import { crmV1Api } from './api/crm/v1/index.ts'
-import { healthCheckV1Config } from './api/health/v1/config.ts'
-import { healthCheckV1Api } from './api/health/v1/index.ts'
-import { healthCheckV2Config } from './api/health/v2/config.ts'
-import { healthCheckV2Api } from './api/health/v2/index.ts'
-import { ordDocumentV1Api } from './api/open-resource-discovery/v1/index.ts'
+import { createServer, type IncomingHttpHeaders, type ServerResponse } from 'node:http'
+import { pathToFileURL } from 'node:url'
+import { handleRequest } from './app.ts'
 import { PORT } from './config.ts'
-import { errorHandler } from './error/errorHandler.ts'
-import { sapEventCatalogDefinition } from './event/odm-finance-costobject/v1/eventCatalogDefinition.ts'
-import { logger } from './shared/logger.ts'
 
-const server = fastify({
-  logger,
-  routerOptions: {
-    ignoreTrailingSlash: true,
-  },
-  exposeHeadRoutes: true,
+export const server = createServer(async (incoming, outgoing) => {
+  const headers = toWebHeaders(incoming.headers)
+  const origin = `http://${headers.get('host') ?? 'localhost'}`
+  const request = new Request(new URL(incoming.url ?? '/', origin), {
+    method: incoming.method,
+    headers,
+  })
+  const response = await handleRequest(request)
+  await sendResponse(response, outgoing, incoming.method === 'HEAD')
 })
 
-initServer().catch(console.error)
+export function startServer(): void {
+  server.listen(PORT, '0.0.0.0', () => {
+    console.info(`Server listening at http://localhost:${PORT}`)
+  })
+}
 
-async function initServer(): Promise<void> {
-  // Setup generic error handling
-  server.setErrorHandler(errorHandler)
+function toWebHeaders(incomingHeaders: IncomingHttpHeaders): Headers {
+  const headers = new Headers()
+  for (const [name, value] of Object.entries(incomingHeaders)) {
+    if (Array.isArray(value)) {
+      for (const item of value) headers.append(name, item)
+    } else if (value !== undefined) {
+      headers.set(name, value)
+    }
+  }
+  return headers
+}
 
-  // Register the APIs of the backend
-  await Promise.all([
-    server.register(healthCheckV1Api, { prefix: `/${healthCheckV1Config.apiEntryPoint}` }),
-    server.register(healthCheckV2Api, { prefix: `/${healthCheckV2Config.apiEntryPoint}` }),
-    server.register(astronomyV1Api, { prefix: `/${astronomyV1ApiConfig.apiEntryPoint}` }),
-    server.register(crmV1Api, { prefix: `/${crmV1ApiConfig.apiEntryPoint}` }),
-    server.register(sapEventCatalogDefinition, { prefix: '/sap-events/v1' }),
-    server.register(ordDocumentV1Api, {}),
-  ])
-
-  // Serve the ORD Explorer UI built by Vite.
-  await server.register(fastifyStatic, {
-    prefix: '/',
-    root: path.resolve(process.cwd(), './dist/ui'),
+async function sendResponse(response: Response, outgoing: ServerResponse, isHeadRequest: boolean): Promise<void> {
+  outgoing.statusCode = response.status
+  response.headers.forEach((value, name) => {
+    outgoing.setHeader(name, value)
   })
 
-  await server.listen({
-    port: PORT,
-    host: '0.0.0.0',
-  })
+  if (isHeadRequest || !response.body) {
+    outgoing.end()
+    return
+  }
 
-  server.log.info(`Server listening at http://localhost:${PORT}`)
+  outgoing.end(Buffer.from(await response.arrayBuffer()))
 }
 
 function closeGracefully(signal: string): void {
-  console.log(`Received signal to terminate: ${signal}`)
-  process.exit()
+  console.info(`Received signal to terminate: ${signal}`)
+  server.close(() => process.exit())
 }
 process.on('SIGINT', closeGracefully)
 process.on('SIGTERM', closeGracefully)
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  startServer()
+}

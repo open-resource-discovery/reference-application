@@ -1,8 +1,6 @@
-import type { FastifyInstance } from 'fastify'
 import type { OpenAPIV3 } from 'openapi-types'
 import { globalTenantIdToLocalTenantIdMapping } from '../../../../data/user/tenantMapping.ts'
-import type { CustomRequest } from '../../../../types/types.ts'
-import { getTenantIdsFromHeader } from '../../../shared/validateUserAuthorization.ts'
+import { getTenantIdsFromRequest } from '../../../shared/validateUserAuthorization.ts'
 import { getCrmV1ApiDefinition } from '../config.ts'
 
 export const openApiResourceName = 'openapi'
@@ -13,12 +11,8 @@ export const openApiResourceName = 'openapi'
  *
  * This will later be referenced through ORD.
  */
-export function openApiResource(fastify: FastifyInstance): void {
-  fastify.get('/oas3.json', {}, getOpenApiDefinitionHandler)
-}
-
-function getOpenApiDefinitionHandler(req: CustomRequest): OpenAPIV3.Document {
-  const tenantIds = getTenantIdsFromHeader(req)
+export function getOpenApiDefinition(request: Request): OpenAPIV3.Document {
+  const tenantIds = getTenantIdsFromRequest(request)
   if (tenantIds.localTenantId) {
     // This is the `sap.foo.bar:open-local-tenant-id:v1` access strategy
     return getCrmV1ApiDefinition(tenantIds.localTenantId)

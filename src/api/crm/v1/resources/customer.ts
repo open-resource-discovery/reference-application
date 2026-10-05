@@ -1,35 +1,18 @@
-import { fastifyBasicAuth } from '@fastify/basic-auth'
-import type { FastifyInstance, FastifyRequest, FastifySchema } from 'fastify'
 import type { OpenAPIV3 } from 'openapi-types'
 import { type CustomerData, customerData } from '../../../../data/customer/customers.ts'
 import { NotFoundError } from '../../../../error/NotFoundError.ts'
-import { basicAuthConfig } from '../../../shared/validateUserAuthorization.ts'
-import { type Customer, type CustomersResponse, customerIdSchema } from '../models/Customer.ts'
+import type { UserInfo } from '../../../shared/validateUserAuthorization.ts'
+import type { Customer, CustomersResponse } from '../models/Customer.ts'
 
 export const customersResourceName = 'customers'
 export const openApiPaths: OpenAPIV3.PathsObject = {}
-
-/**
- * Customers related HTTP operations
- */
-export async function customersResource(fastify: FastifyInstance): Promise<void> {
-  // Register our basic authentication
-  await fastify.register(fastifyBasicAuth, basicAuthConfig)
-  fastify.addHook('onRequest', fastify.basicAuth)
-  fastify.get('/', {}, getCustomersHandler)
-  fastify.get('/:id', { schema: getCustomersByIdSchema }, getCustomerByIdHandler)
-}
 
 //////////////////////////////////////////
 // GET /customers                  //
 //////////////////////////////////////////
 
-function getCustomersHandler(req: FastifyRequest): CustomersResponse {
-  if (!req.user?.tenantId) {
-    throw new NotFoundError('No user / tenant ID provided')
-  } else {
-    return { value: mapCustomerData(customerData[req.user.tenantId] || []) }
-  }
+export function getCustomers(user: UserInfo): CustomersResponse {
+  return { value: mapCustomerData(customerData[user.tenantId] || []) }
 }
 
 export const getCustomersPath = `/${customersResourceName}`
@@ -72,29 +55,13 @@ openApiPaths[getCustomersPath] = {
 // GET /customers/:id              //
 //////////////////////////////////////////
 
-const getCustomersByIdSchema: FastifySchema = {
-  params: {
-    type: 'object',
-    properties: {
-      id: customerIdSchema,
-    },
-  },
-}
-
-interface GetCustomersByIdParams {
-  id: number
-}
-
-function getCustomerByIdHandler(req: FastifyRequest<{ Params: GetCustomersByIdParams }>): Customer {
-  if (!req.user?.tenantId) {
-    throw new NotFoundError('No user / tenant ID provided', req.params.id.toString())
-  }
-  const customers = mapCustomerData(customerData[req.user.tenantId])
-  const found = customers.find((el) => el.id === req.params.id)
+export function getCustomerById(user: UserInfo, id: number): Customer {
+  const customers = mapCustomerData(customerData[user.tenantId])
+  const found = customers.find((el) => el.id === id)
   if (found) {
     return found
   } else {
-    throw new NotFoundError(`Could not find customer with ID: ${req.params.id}`, req.params.id.toString())
+    throw new NotFoundError(`Could not find customer with ID: ${id}`, id.toString())
   }
 }
 

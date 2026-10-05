@@ -4,7 +4,9 @@
 
 This is a reference application that demonstrates the implementation of [Open Resource Discovery](https://open-resource-discovery.github.io/specification/) (ORD) protocol.
 
-It consists of a backend (implemented in TypeScript / Node.js) that exposes some resources (e.g. APIs and Events). Those resources are described via metadata through ORD and the applicable resource definition formats like [OpenAPI v3.0](https://spec.openapis.org/oas/v3.0.3).
+It consists of a backend implemented in TypeScript and Node.js that exposes resources such as APIs and Events.
+Those resources are described via metadata through ORD and applicable resource definition formats such as [OpenAPI v3.0](https://spec.openapis.org/oas/v3.0.3).
+The backend uses only Node.js built-ins at runtime, while the development dependencies provide the build, test, type, and embedded Explorer tooling.
 
 The application root embeds the [ORD Explorer](https://github.com/open-resource-discovery/explorer).
 It can display the public `system-version` perspective or use hardcoded demo Basic Auth credentials to display tenant `T1` through the `system-instance` perspective.

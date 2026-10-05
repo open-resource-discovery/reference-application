@@ -1,7 +1,5 @@
-import type { FastifyInstance } from 'fastify'
-import { getTenantIdsFromHeader } from '../../../api/shared/validateUserAuthorization.ts'
+import { getTenantIdsFromRequest } from '../../../api/shared/validateUserAuthorization.ts'
 import { globalTenantIdToLocalTenantIdMapping } from '../../../data/user/tenantMapping.ts'
-import type { CustomRequest } from '../../../types/types.ts'
 import type { SapEventCatalog } from '../../shared/SapEventCatalog.ts'
 import { getOdmCostObjectSapEventCatalogDefinition } from './config.ts'
 
@@ -13,12 +11,8 @@ export const openApiResourceName = 'openapi'
  *
  * This will later be referenced through ORD.
  */
-export function sapEventCatalogDefinition(fastify: FastifyInstance): void {
-  fastify.get('/odm-finance-costobject.asyncapi2.json', {}, getSapEventCatalogDefinitionHandler)
-}
-
-function getSapEventCatalogDefinitionHandler(req: CustomRequest): SapEventCatalog {
-  const tenantIds = getTenantIdsFromHeader(req)
+export function getSapEventCatalogDefinition(request: Request): SapEventCatalog {
+  const tenantIds = getTenantIdsFromRequest(request)
   if (tenantIds.localTenantId) {
     // This is the `sap.foo.bar:open-local-tenant-id:v1` access strategy
     return getOdmCostObjectSapEventCatalogDefinition(tenantIds.localTenantId)

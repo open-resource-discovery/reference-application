@@ -1,77 +1,55 @@
-import type { FastifyReply, FastifyRequest } from 'fastify'
 import { globalTenantIdToLocalTenantIdMapping } from '../../data/user/tenantMapping.ts'
-import { type TenantConfiguration, tenants } from '../../data/user/tenants.ts'
 import { apiUsersAndPasswords } from '../../data/user/users.ts'
 import { UnauthorizedError } from '../../error/UnauthorizedError.ts'
-import type { CustomRequest } from '../../types/types.ts'
 
 export interface UserInfo {
   userName: string
   tenantId: string
-  tenantConfiguration: TenantConfiguration
 }
-
-export const basicAuthConfig = { validate: validateUserAuthorization, authenticate: true }
 
 const localTenants = Object.values(globalTenantIdToLocalTenantIdMapping)
 
 /**
  * Validates a request for a valid BasicAuth login
  *
- * When successful it will annotate the request object with a user object
- * containing the user context information
+ * Returns the authenticated user and tenant context.
  *
  * @throws UnauthorizedError
  */
-export function validateUserAuthorization(
-  username: string,
-  password: string,
-  req: FastifyRequest,
-  _reply: FastifyReply,
-  done: (error?: Error) => void,
-): void {
-  try {
-    if (apiUsersAndPasswords[username] && apiUsersAndPasswords[username].password === password) {
-      const tenantId = apiUsersAndPasswords[username].tenantId
-      // Add user info to the request that we've validated
-      req.user = {
-        userName: username,
-        tenantId,
-        tenantConfiguration: tenants[tenantId],
-      }
-      req.log.info(`User "${username}" of tenant "${tenantId}" authenticated successfully.`)
-      done()
-    } else {
-      done(new UnauthorizedError(`Unknown username "${username}" and password combination`))
-    }
-  } catch (error) {
-    done(error instanceof Error ? error : new Error('Authentication failed'))
+export function authenticateBasicAuth(request: Request): UserInfo {
+  const authorization = request.headers.get('authorization')
+  const match = authorization?.match(/^Basic\s+(.+)$/i)
+  if (!match) {
+    throw new UnauthorizedError('Missing or invalid Basic Authorization header')
+  }
+
+  const credentials = Buffer.from(match[1], 'base64').toString('utf8')
+  const separator = credentials.indexOf(':')
+  const username = separator >= 0 ? credentials.slice(0, separator) : credentials
+  const password = separator >= 0 ? credentials.slice(separator + 1) : ''
+  const user = apiUsersAndPasswords[username]
+
+  if (!user || user.password !== password) {
+    throw new UnauthorizedError(`Unknown username "${username}" and password combination`)
+  }
+
+  return {
+    userName: username,
+    tenantId: user.tenantId,
   }
 }
 
-export function getTenantIdsFromHeader(req: CustomRequest): {
+export function getTenantIdsFromRequest(request: Request): {
   localTenantId: string | undefined
   globalTenantId: string | undefined
 } {
   let localTenantId: string | undefined
   let globalTenantId: string | undefined
 
+  const url = new URL(request.url)
   // GET parameter has priority over header
-  if (req.query['local-tenant-id']) {
-    localTenantId = req.query['local-tenant-id']
-  } else {
-    localTenantId = Array.isArray(req.headers['local-tenant-id'])
-      ? req.headers['local-tenant-id'].join()
-      : req.headers['local-tenant-id']
-  }
-
-  if (req.query['global-tenant-id']) {
-    globalTenantId = req.query['global-tenant-id']
-  } else {
-    globalTenantId = Array.isArray(req.headers['global-tenant-id'])
-      ? req.headers['global-tenant-id'].join()
-      : req.headers['global-tenant-id']
-  }
+  localTenantId = url.searchParams.get('local-tenant-id') ?? request.headers.get('local-tenant-id') ?? undefined
+  globalTenantId = url.searchParams.get('global-tenant-id') ?? request.headers.get('global-tenant-id') ?? undefined
 
   // Validation
   if (localTenantId && !localTenants.includes(localTenantId)) {
