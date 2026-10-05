@@ -2,6 +2,12 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Unreleased
+
+### Changed
+
+- Replace the static landing page with an embedded ORD Explorer that switches between public `system-version` metadata and demo-authenticated `system-instance` metadata.
+
 ## [1.1.1] - 2026-09-12
 
 ### Changed
