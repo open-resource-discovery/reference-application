@@ -49,12 +49,9 @@ function ReferenceApplication() {
           </p>
         </div>
         <nav aria-label="Reference application links">
+          <a href="https://open-resource-discovery.org/">ORD specification ↗</a>
           <a href="/.well-known/open-resource-discovery">Discovery entry point</a>
           <a href="https://github.com/open-resource-discovery/reference-application">Source &amp; guide ↗</a>
-          <a href="https://github.com/open-resource-discovery/explorer">Explorer project ↗</a>
-          <a href="https://open-resource-discovery.org/docs/introduction#metadata-discovery-protocol">
-            Discovery flow ↗
-          </a>
         </nav>
       </header>
       <section className="reference-app__perspectives" aria-label="ORD perspective">
