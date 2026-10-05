@@ -1,79 +1,144 @@
 
-# This file can be used with the REST Client VSCode Extension
+# ORD discovery walkthrough: static and dynamic perspectives
+#
+# This file is an executable tutorial for consuming an ORD Provider. Run the
+# requests top to bottom with the REST Client VSCode extension and read the
+# comments as the narrative.
 # @see https://marketplace.visualstudio.com/items?itemName=humao.rest-client
+#
+# The flow mirrors the ORD pull transport:
+#   1. Discover the ORD configuration at the well-known endpoint.
+#   2. Fetch each advertised ORD document, honoring its access strategy.
+#      - system-version  perspective -> static,  open access, no tenant.
+#      - system-instance perspective -> dynamic, basic-auth, tenant-scoped.
+#   3. Follow a resource definition link from a document to its contract.
+#   4. Call the discovered API.
+#
+# @see https://open-resource-discovery.org/spec-v1#pull-transport-sequence-diagram
 
 #################################################################################
 
 @apiBasePath = http://localhost:8080
-# @apiBasePath = https://ord-reference-application.cfapps.sap.hana.ondemand.com/
+# @apiBasePath = https://ord-reference-application.cfapps.sap.hana.ondemand.com
 
-# TenantIDs for Tenant T1
+# Tenant T1 (user foo:bar). Basic Auth determines the system instance / tenant;
+# the value below is Base64 of "foo:bar".
 @localTenantId = T1
 @sapGlobalTenantId = 740000101
 @apiAuthorization = Basic Zm9vOmJhcg==
 
-# TenantIDs for Tenant T2
+# Tenant T2 (user bar:foo). Uncomment to repeat the dynamic requests as T2 and
+# observe a different tenant-scoped document. Base64 of "bar:foo".
 # @localTenantId = T2
 # @sapGlobalTenantId = 740000102
+# @apiAuthorization = Basic YmFyOmZvbw==
 
 
 #################################################################################
+# STEP 1 - Discover the ORD configuration
+#
+# The well-known endpoint is the single entry point. It reports which ORD
+# version is supported and lists every available document together with its
+# `perspective` and `accessStrategies`. A consumer reads this first, then
+# decides how to fetch each document. This endpoint is unauthenticated.
+#
+# Expect two documents:
+#   - perspective "system-version"  with accessStrategy "open"
+#   - perspective "system-instance" with accessStrategy "basic-auth"
+#################################################################################
 
-# First step:
-# * Discovery the whether ORD is supported by the system instance
-# * Find out which version of ORD and which capabilities are supported
-# * Find out which ORD documents are available and where they are stored
 GET {{apiBasePath}}/.well-known/open-resource-discovery HTTP/1.1
 content-type: application/json
 
+
+#################################################################################
+# STEP 2a - Fetch the STATIC document (system-version perspective)
+#
+# The static perspective describes the reusable baseline of a system type or
+# version: the resources it can expose, without any tenant-specific context.
+# Its access strategy is "open", so no authentication is required and no tenant
+# is involved. This is the document a catalog crawls to learn what a product
+# offers in general.
 #################################################################################
 
-# Second Step (1/2)
-# * REPEAT for each discovered ORD Document:
-#   * GET the ORD document according to the `accessType` (here: `open`)
 GET {{apiBasePath}}/open-resource-discovery/v1/documents/system-version HTTP/1.1
 content-type: application/json
 
+
+#################################################################################
+# STEP 2b - Fetch the DYNAMIC document (system-instance perspective)
+#
+# The dynamic perspective describes the complete runtime view of one concrete
+# system instance, including tenant-specific configuration. Its access strategy
+# is "basic-auth": the authenticated user determines which tenant / system
+# instance you see. The document description reflects the tenant (T1 / T2).
+#
+# Without credentials this returns 401 (see STEP 2c). Switch the credential
+# block at the top of the file to fetch the same document as a different tenant.
 #################################################################################
 
-# Second Step (2/2)
-# * REPEAT for each discovered ORD Document:
-#   * GET the ORD document according to the `accessType` (here: `basic-auth`)
-#   * The authenticated user determines the tenant / system instance.
 GET {{apiBasePath}}/open-resource-discovery/v1/documents/system-instance HTTP/1.1
 content-type: application/json
 Authorization: {{apiAuthorization}}
 
+
+#################################################################################
+# STEP 2c - The dynamic document requires authentication
+#
+# The same request without an Authorization header must be rejected with 401.
+# This demonstrates that tenant metadata is never exposed anonymously, while
+# the static document in STEP 2a stays openly available.
 #################################################################################
 
-# Third Step (1/2)
-# * REPEAT for each discovered and relevant resource definition:
-#   * GET the resource definition file according to the `accessType` (here: `open`)
+GET {{apiBasePath}}/open-resource-discovery/v1/documents/system-instance HTTP/1.1
+content-type: application/json
+
+
+#################################################################################
+# STEP 3a - Follow a definition link: open access
+#
+# Each API resource in a document links its machine-readable contract through
+# a `resourceDefinitions[].url`. The Astronomy API publishes an OpenAPI
+# definition with "open" access, so it is fetched without authentication.
+#################################################################################
+
 GET {{apiBasePath}}/astronomy/v1/openapi/oas3.json HTTP/1.1
 content-type: application/json
+
+
+#################################################################################
+# STEP 3b - Follow a definition link: tenant-scoped access
+#
+# The CRM API's OpenAPI definition is tenant-aware. The provider resolves the
+# tenant from the `global-tenant-id` header, so the returned contract matches
+# the system instance discovered in STEP 2b.
 #################################################################################
 
-# Third Step (2/2)
-# * REPEAT for each discovered and relevant resource definition:
-#   * GET the resource definition file according to the `accessType` (here: `custom`)
 GET {{apiBasePath}}/crm/v1/openapi/oas3.json HTTP/1.1
 content-type: application/json
 global-tenant-id: {{sapGlobalTenantId}}
 
-#################################################################################
 
-# Follow Up
-# Now that we have discovered that we have an Astronomy API
-# and where / how it is accessed at run-time.
+#################################################################################
+# STEP 4 - Use the discovered resource
+#
+# Discovery is complete: we found the Astronomy API, learned where and how it
+# is accessed, and can now call it like any ordinary API.
+#################################################################################
 
 GET {{apiBasePath}}/astronomy/v1/constellations HTTP/1.1
 content-type: application/json
 
+
+#################################################################################
+# ADDON - Conditional requests with ETags (RECOMMENDED)
+#
+# The configuration and documents support ETags. Re-send the ETag from a prior
+# response via `If-None-Match`; if nothing changed the provider answers
+# 304 Not Modified with an empty body, so a crawler avoids re-downloading.
+# Replace the value below with the ETag you received in STEP 1.
 #################################################################################
 
-# Addon: RECOMMENDED ETags
-# If we send the ETag from a previous request and no changes have been done
-# We should get a 304 Not Modified Response
 GET {{apiBasePath}}/.well-known/open-resource-discovery HTTP/1.1
 content-type: application/json
 If-None-Match: "1wzy420"
