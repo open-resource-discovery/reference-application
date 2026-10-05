@@ -6,6 +6,8 @@ This is a reference application that demonstrates the implementation of [Open Re
 
 It consists of a backend (implemented in TypeScript / Node.js) that exposes some resources (e.g. APIs and Events). Those resources are described via metadata through ORD and the applicable resource definition formats like [OpenAPI v3.0](https://spec.openapis.org/oas/v3.0.3).
 
+The application root embeds the [ORD Explorer](https://github.com/open-resource-discovery/explorer) and displays the public `system-version` perspective of this provider.
+
 ## Explore by a role
 
 ### ORD Consumer: How to discover the metadata via ORD

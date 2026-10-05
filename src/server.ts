@@ -39,10 +39,10 @@ async function initServer(): Promise<void> {
     server.register(ordDocumentV1Api, {}),
   ])
 
-  // Static file serving, to serve some HTML documentation for the reference app
+  // Serve the ORD Explorer UI built by Vite.
   await server.register(fastifyStatic, {
     prefix: '/',
-    root: path.resolve(process.cwd(), './static'),
+    root: path.resolve(process.cwd(), './dist/ui'),
   })
 
   await server.listen({

@@ -10,8 +10,10 @@
   },
   "scripts": {
     "prebuild": "node scripts/clean.mjs",
-    "build": "tsc",
+    "build": "npm run build:ui && tsc",
+    "build:ui": "tsc --project ui/tsconfig.json && vite build",
     "start": "node ./dist/src/server.js",
+    "predev": "npm run build:ui",
     "dev": "node --watch ./src/server.ts",
     "lint": "biome lint --write .",
     "lint:ci": "biome lint .",
@@ -30,6 +32,7 @@
     "@fastify/basic-auth": "6.3.0",
     "@fastify/etag": "6.2.0",
     "@fastify/static": "10.1.3",
+    "@open-resource-discovery/explorer": "^0.2.1",
     "fastify": "^5.12.3",
     "pino-pretty": "^13.1.3"
   },
@@ -38,7 +41,14 @@
     "@open-resource-discovery/specification": "^1.16.3",
     "@tsconfig/node24": "^24.0.5",
     "@types/node": "^24.13.4",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.1.1",
+    "buffer": "^6.0.3",
     "openapi-types": "^12.1.3",
-    "typescript": "^7.0.2"
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.2"
   }
 }
