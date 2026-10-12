@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Update the ORD specification dependency and served reference document to ORD 1.17.
 - Replace the static landing page with an embedded ORD Explorer that switches between public `system-version` metadata and demo-authenticated `system-instance` metadata.
 - Replace Fastify and its plugins with Node.js built-ins, leaving the built application with no production dependencies.
 

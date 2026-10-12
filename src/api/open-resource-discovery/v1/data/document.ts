@@ -143,7 +143,7 @@ const odmFinanceCostObjectV1EventResource: EventResource = {
  * This is the complete ORD document that will be served through the ORD Document API
  */
 export const ordDocument: OrdDocument = {
-  openResourceDiscovery: '1.12',
+  openResourceDiscovery: '1.17',
   policyLevels: ['sap:core:v1'],
   perspective: 'system-version',
   describedSystemVersion: describedSystemVersion,
