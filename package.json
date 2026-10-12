@@ -31,7 +31,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.5.13",
     "@open-resource-discovery/explorer": "^0.2.1",
-    "@open-resource-discovery/specification": "^1.16.3",
+    "@open-resource-discovery/specification": "^1.17.0",
     "@tsconfig/node24": "^24.0.5",
     "@types/node": "^24.13.4",
     "@types/react": "^19.2.14",
