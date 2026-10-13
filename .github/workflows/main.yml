@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -31,3 +32,50 @@ jobs:
 
       - name: Test
         run: npm run test:ci
+
+      - name: Package application
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v7
+        with:
+          name: application
+          path: |
+            dist
+            static
+            package.json
+            package-lock.json
+          retention-days: 1
+
+  Deploy:
+    needs: Build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: ord-reference-app-production
+      cancel-in-progress: false
+    container: cloudfoundry/cli:8.19.0
+    env:
+      CF_API: https://api.cf.sap.hana.ondemand.com
+      CF_ORG: CORE_CF
+      CF_SPACE: open-discovery
+      CF_APP: ord-reference-app
+    steps:
+      - name: Download application
+        uses: actions/download-artifact@v8
+        with:
+          name: application
+
+      - name: Log in to Cloud Foundry
+        env:
+          CF_USERNAME: ${{ secrets.CF_USERNAME }}
+          CF_PASSWORD: ${{ secrets.CF_PASSWORD }}
+        run: |
+          cf login \
+            --api "$CF_API" \
+            --username "$CF_USERNAME" \
+            --password "$CF_PASSWORD" \
+            --org "$CF_ORG" \
+            --space "$CF_SPACE"
+
+      - name: Deploy application
+        run: cf push "$CF_APP" --strategy rolling
