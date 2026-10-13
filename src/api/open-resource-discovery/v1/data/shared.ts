@@ -8,6 +8,7 @@ import type {
   Product,
   SystemInstance,
   SystemVersion,
+  Vendor,
 } from '@open-resource-discovery/specification'
 import { PUBLIC_URL } from '../../../../config.ts'
 
@@ -34,10 +35,17 @@ export const describedSystemVersion: SystemVersion = {
   version: packageJson.version,
 }
 
+// Replace this placeholder with the registered namespace and identity of your own vendor.
+export const exampleVendor: Vendor = {
+  ordId: 'foo:vendor:Example:',
+  title: 'Example vendor (replace with your own)',
+}
+
 export const product: Product = {
-  ordId: `${appNamespace}:product:ord-reference-app:`,
+  // Product IDs use the vendor namespace, not the application's system namespace.
+  ordId: 'foo:product:ord-reference-app:',
   title: 'ORD Reference App',
-  vendor: vendorSapReference,
+  vendor: exampleVendor.ordId,
   shortDescription: 'Open Resource Discovery Reference Application',
 }
 
