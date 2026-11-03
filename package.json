@@ -5,7 +5,7 @@
   "type": "module",
   "private": true,
   "engines": {
-    "node": "26.x",
+    "node": ">=24.22.1",
     "npm": ">=11.0.0"
   },
   "scripts": {
