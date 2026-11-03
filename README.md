@@ -89,7 +89,7 @@ The tenants and their configuration be found in [src/data/user/tenants.ts](/src/
 
 ### Prerequisites
 
-Install [Node.js](https://nodejs.org/en/) v24.
+Install [Node.js](https://nodejs.org/en/) v26 with its bundled npm.
 
 ### Run the app
 
@@ -105,15 +105,25 @@ Set `PUBLIC_URL` when consumers such as the ORD crawler must fetch all resource 
 PUBLIC_URL=http://127.0.0.1:8080 npm run dev
 ```
 
+## Cloud Foundry deployment
+
+Cloud Foundry deployment is managed manually.
+The existing application is named `ord-reference-app` in org `CORE_CF`, space `open-discovery`, at `https://api.cf.sap.hana.ondemand.com`.
+Move the application from the deprecated `cflinuxfs4` stack to `cflinuxfs5` during the next deployment.
+Before deploying, verify that the selected Node.js buildpack supports the `26.x` runtime required by `package.json`.
+The upstream [Node.js buildpack v1.9.7](https://github.com/cloudfoundry/nodejs-buildpack/releases/tag/v1.9.7) packages Node.js 22 and 24, so this release cannot stage the application.
+A newer or platform-provided buildpack with Node.js 26 support is required.
+Use `cf buildpacks` after logging in to inspect the buildpacks available on the target platform.
+
 ## ORD Implementation / Aspects
 
-| Feature                 | Status |
-| ----------------------- | ------ |
-| ORD Document with open access strategy | ✅ |
-| ORD Document with [custom access strategy](docs/README.md#access-strategies) | ✅ |
-| System instance aware ORD Document (optional API resources) | ✅ |
-| System instance aware resource definitions (e.g. field extensibility) | ✅ |
-| Protected metadata, accessible via SAP aligned Access Strategy | 🟥 |
+| Feature                                                                      | Status |
+| ---------------------------------------------------------------------------- | ------ |
+| ORD Document with open access strategy                                       | ✅     |
+| ORD Document with [custom access strategy](docs/README.md#access-strategies) | ✅     |
+| System instance aware ORD Document (optional API resources)                  | ✅     |
+| System instance aware resource definitions (e.g. field extensibility)        | ✅     |
+| Protected metadata, accessible via SAP aligned Access Strategy               | 🟥     |
 
 If you miss some features or use case, please get in contact.
 
