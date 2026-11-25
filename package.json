@@ -48,5 +48,18 @@
     "react-dom": "^19.3.1",
     "typescript": "^7.0.2",
     "vite": "^8.3.5"
+  },
+  "packageManager": "npm@11.20.0",
+  "devEngines": {
+    "packageManager": {
+      "name": "npm",
+      "version": ">=11.20.0",
+      "onFail": "error"
+    }
+  },
+  "allowScripts": {
+    "@scarf/scarf@1.4.0": false,
+    "fsevents@2.3.3": false,
+    "vue-demi@0.14.10": false
   }
 }

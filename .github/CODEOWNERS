@@ -3,3 +3,5 @@
 /package.json @open-resource-discovery/reference-application-admin
 /package-lock.json @open-resource-discovery/reference-application-admin
 /scripts/ @open-resource-discovery/reference-application-admin
+/npmrc @open-resource-discovery/reference-application-admin
+/SECURITY_INSTALL.md @open-resource-discovery/reference-application-admin
