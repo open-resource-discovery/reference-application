@@ -9,12 +9,10 @@
     "npm": ">=11.0.0"
   },
   "scripts": {
-    "prebuild": "node scripts/clean.mjs",
-    "build": "npm run build:ui && tsc",
+    "build": "node scripts/clean.mjs && npm run build:ui && tsc",
     "build:ui": "tsc --project ui/tsconfig.json && vite build",
     "start": "node ./dist/src/server.js",
-    "predev": "npm run build:ui",
-    "dev": "node --watch ./src/server.ts",
+    "dev": "npm run build:ui && node --watch ./src/server.ts",
     "lint": "biome lint --write .",
     "lint:ci": "biome lint .",
     "format": "biome format --write .",
