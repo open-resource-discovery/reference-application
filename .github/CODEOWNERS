@@ -1,0 +1,9 @@
+# Review owners for CI and build configuration.
+/.github/ @open-resource-discovery/reference-application-admin
+/package.json @open-resource-discovery/reference-application-admin
+/package-lock.json @open-resource-discovery/reference-application-admin
+/scripts/ @open-resource-discovery/reference-application-admin
+/npmrc @open-resource-discovery/reference-application-admin
+
+# Review the installer policy with the corresponding package owners.
+/.npmrc @open-resource-discovery/reference-application-admin
