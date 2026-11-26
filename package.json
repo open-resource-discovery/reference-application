@@ -34,7 +34,7 @@
     }
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.6.4",
+    "@biomejs/biome": "^2.6.8",
     "@open-resource-discovery/explorer": "^0.2.1",
     "@open-resource-discovery/specification": "^1.17.0",
     "@types/node": "^26.6.6",
